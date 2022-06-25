@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  # MongoDB services
+  mongo_db:
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+  
+  pym:
+    # Node Service
+    build: .
+    ports:
+      - 3000:3001
+    environment:
+      PORT: 5000
+      MONGODB_URI: mongodb://mongo_db:27017
+      DB_NAME: my_db
+      NAME: Pym
+    volumes:
+     - uploads:/usr/src/app/uploads
+
+    depends_on:
+    - mongo_db
+  
+  pym-client:
+    build:
+      context: ../pym-client
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    environment:
+      PORT: 4000
+    volumes:
+     - uploads:/usr/src/app/src/uploads
+
+volumes:
+  mongo_db: {}
+  uploads: {}

@@ -1,0 +1,90 @@
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import Paper from "@mui/material/Paper";
+import NavBar from "./NavBar";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { ocean } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import Container from "@mui/material/Container";
+
+const Display = () => {
+  // The post ID from the URL
+  let { id } = useParams();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isImage, setIsImage] = useState(false);
+  const [language, setLanguage] = useState("python");
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    fetchData(id);
+  }, []);
+
+  const fetchData = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3000/${id}`);
+      const data = await response.json();
+      if (data.isImage) {
+        setIsImage(true);
+      } else {
+        setIsImage(false);
+        setLanguage(data.langauge);
+      }
+      setText(data.value);
+      setIsLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const paperStyle = {
+    margin: "5rem 3rem",
+    padding: "5rem 5rem",
+  };
+
+//   if (isLoading) {
+//     return <div><h1>LOADING!</h1></div>;
+//   }
+
+  if (isImage) {
+    return (
+      <div>
+        <NavBar />
+        {/* <Paper
+          elevation={2}
+          style={paperStyle}
+          sx={{ maxWidth: 'md', backgroundColor: "inherit" }}
+        > */}
+        <Container sx = {{
+            // my: "3rem",
+            // mx: "2rem",
+            width: "100%",
+            my: "3rem",
+        }}>
+          <img
+          style = {{
+              maxWidth: "100%",
+              maxHeight: "100%",
+          }}
+            src={require(`/usr/src/app/src/${text}`)}
+            alt={"Oops! Image not here"}
+          />
+        {/* </Paper> */}
+        </Container>
+      </div>
+    );
+  } else {
+    return (
+      <div className="text">
+        <NavBar />
+        <SyntaxHighlighter
+          language={language}
+          style={ocean}
+          showLineNumbers="true"
+          showInlineLineNumbers="true"
+        >
+          {text}
+        </SyntaxHighlighter>
+      </div>
+    );
+  }
+};
+export default Display;
