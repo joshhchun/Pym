@@ -10,23 +10,21 @@ services:
   
   pym:
     # Node Service
-    build: .
+    build:
+      context: ./pym-api
+      dockerfile: Dockerfile
     ports:
       - 3000:3001
-    environment:
-      PORT: 5000
-      MONGODB_URI: mongodb://mongo_db:27017
-      DB_NAME: my_db
-      NAME: Pym
+    env_file:
+      - ./pym-api/.env
     volumes:
      - uploads:/usr/src/app/uploads
-
     depends_on:
     - mongo_db
   
   pym-client:
     build:
-      context: ../pym-client
+      context: ./pym-client
       dockerfile: Dockerfile
     ports:
       - 4000:4000
