@@ -34,6 +34,7 @@ const Display = () => {
         } else {
           setIsImage(false);
           setLanguage(data.langauge);
+          console.log(data.language);
         }
         setText(data.value);
       }

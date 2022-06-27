@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const Post = require("../models/Post");
 
+// API Endpoint to retrieve post data from the database
 router.get("/:id", async (req, res) => {
   try {
     const post = await Post.findOne({ shortId: req.params.id });

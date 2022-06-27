@@ -46,7 +46,8 @@ const NewText = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
       });
-      const data = await response.json();
+      const data = await response.json()
+      console.log("response " + data);
       navigate(`/${data.shortId}`);
     } catch (e) {
       console.log(e.message);

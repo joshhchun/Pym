@@ -28,12 +28,19 @@ const NewPost = (props) => {
         allowMultiple={false}
         maxFiles={1}
         server={{
-          url: "http://localhost:3000/save/image",
+          // url: "http://localhost:3000/save/image",
+          url: "http://localhost:3000/save/",
           process: {
             onload: (response) => {
-              console.log(response);
-              setLink("http://localhost:4000/" + response);
-              navigate(`/${response}`);
+              const data = JSON.parse(response)
+              console.log(data);
+              // console.log(response.shortId);
+              // console.log("response " + response);
+              // console.log(response.shortId);
+              // const data = response.json()
+              // console.log(data.shortId);
+              // setLink("http://localhost:4000/" + data.shortId);
+              navigate(`/${data.shortId}`);
             },
           },
         }}

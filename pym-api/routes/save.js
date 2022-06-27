@@ -43,65 +43,26 @@ const hashFile = (content) => {
 };
 
 // API Endpoint for uploading an image
-router.post("/image", upload.single("files"), async (req, response) => {
-  if (req.file) {
-    try {
-      // If file already exists then just return existing shortID
-      const fileBuffer = fs.readFileSync("/usr/src/app/" + req.file.path);
-      const hexDigest = hashFile(fileBuffer);
-      Post.findOne({ hash: hexDigest })
-        .then((res) => {
-          // There was a post in the database with same hash so returning existing URL
-          if (res) {
-            return response.send(res.shortId);
-          // There was no existing post with same hash so making new DB entry
-          } else {
-            Post.create({
-              isImage: true,
-              value: req.file.path,
-              hash: hexDigest,
-            })
-              .then((res) => {
-                return response.status(200).send(res.shortId);
-              })
-              .catch((e) => {
-                console.log("error: " + e);
-              });
-          }
-        })
-        .catch((err) => {
-          console.log("There was an error: " + err);
-          return;
-        });
-    } catch (e) {
-      console.log(e.message);
-    }
-  } else {
-    console.log("not a file");
-  }
-});
-
-// API Endpoint for uploading text/code
-router.post("/", async (req, response) => {
-  if (!req.body.value) return;
+router.post("/", upload.single("files"), async (req, response) => {
   try {
-    const hexDigest = hashFile(req.body.value);
-    // Try to find an existing DB entry with same hash
+    // If file already exists then just return existing shortID
+    const fileBuffer = req.file ? fs.readFileSync("/usr/src/app/" + req.file.path) : req.body.value;
+    const hexDigest = hashFile(fileBuffer);
     Post.findOne({ hash: hexDigest })
       .then((res) => {
-        // Hash found, return existing DB short ID
+        // There was a post in the database with same hash so returning existing URL
         if (res) {
-          return response.status(200).json({"shortId": res.shortId});
-        // Hash not found, make a new entry
+          return response.status(200).json({shortId: res.shortId});
+          // There was no existing post with same hash so making new DB entry
         } else {
           Post.create({
-            isImage: false,
-            value: req.body.value,
+            isImage: req.file ? true : false,
+            value: req.file ? req.file.path : req.body.value,
             hash: hexDigest,
             language: req.body.language,
           })
             .then((res) => {
-              return response.status(200).json({"shortId": res.shortId});
+              return response.status(200).json({shortId: res.shortId});
             })
             .catch((e) => {
               console.log("error: " + e);
@@ -110,6 +71,7 @@ router.post("/", async (req, response) => {
       })
       .catch((err) => {
         console.log("There was an error: " + err);
+        return;
       });
   } catch (e) {
     console.log(e.message);
