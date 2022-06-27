@@ -4,31 +4,27 @@ import "../App.css";
 import NavBar from "./NavBar";
 
 const Home = (props) => {
-  const codeString = `
-#!/usr/bin/env python
 
-"""Django's command-line utility for administrative tasks."""
-import sys
-import os
+  const message = 
+`# Welcome to Pym!
+# Pym is a syntax-higlighted text/image pastebin and URL shortener that allows you to share your code quickly.
 
+def permutations(length, alphabet=ALPHABET):
+    ''' Recursively yield all permutations of alphabet up to given length. '''
 
-def main():
-    """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_api.settings.development")
-    try:
-        from django.core.management import execute_from_command_line
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable? Did you "
-            "forget to activate a virtual environment?"
-        ) from exc
-    execute_from_command_line(sys.argv)
+    if length <= 0:
+        yield ""
+    elif length == 1:
+        for letter in alphabet:
+            yield letter
+    else:
+        for letter in alphabet:
+            for ele in permutations(length - 1, alphabet):
+                yield letter + ele
 
 
-if __name__ == '__main__':
-    main()
-`;
+# Interact with the "New" button on the top right to create a new post, and you will be redirected to your unique short URL`
+
   return (
     <div className="text">
       <NavBar />
@@ -38,7 +34,7 @@ if __name__ == '__main__':
         showLineNumbers="true"
         showInlineLineNumbers="true"
       >
-        {codeString}
+        {message}
       </SyntaxHighlighter>
     </div>
   );

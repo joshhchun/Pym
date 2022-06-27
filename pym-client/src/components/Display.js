@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Paper from "@mui/material/Paper";
 import NavBar from "./NavBar";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { ocean } from "react-syntax-highlighter/dist/esm/styles/hljs";
@@ -13,23 +12,33 @@ const Display = () => {
   const [language, setLanguage] = useState("python");
   const [text, setText] = useState("");
 
+  // Fetch the data from backend & database
   useEffect(() => {
     fetchData(id);
   }, []);
 
+  // Function to fetch the data from backend
   const fetchData = async (id) => {
     try {
       const response = await fetch(`http://localhost:3000/${id}`);
       const data = await response.json();
-      if (data.isImage) {
-        setIsImage(true);
-      } else {
+      console.log(data.value);
+      // If there is no data response then there is no post with the inputed ID
+      if (!data) {
         setIsImage(false);
-        setLanguage(data.langauge);
+        setLanguage("plaintext");
+        setText("No post with that ID! Sorry :P");
+      } else {
+        if (data.isImage) {
+          setIsImage(true);
+        } else {
+          setIsImage(false);
+          setLanguage(data.langauge);
+        }
+        setText(data.value);
       }
-      setText(data.value);
     } catch (e) {
-      console.log(e);
+      console.log(e.message);
     }
   };
 
@@ -37,15 +46,17 @@ const Display = () => {
     return (
       <div>
         <NavBar />
-        <Container sx = {{
+        <Container
+          sx={{
             width: "100%",
             my: "3rem",
-        }}>
+          }}
+        >
           <img
-          style = {{
+            style={{
               maxWidth: "100%",
               maxHeight: "100%",
-          }}
+            }}
             src={require(`/usr/src/app/src/${text}`)}
             alt={"Oops! Image not here"}
           />

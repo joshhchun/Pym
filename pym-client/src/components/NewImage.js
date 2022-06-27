@@ -41,21 +41,6 @@ const NewPost = (props) => {
         labelIdle='Drag & Drop your file or <span class="filepond--label-action">Browse</span>'
         className="fp"
       />
-      <Button
-        fullWidth
-        variant="outlined"
-        color="inherit"
-        onClick={() => navigate("/newtext")}
-        sx = {{
-          marginTop: "2rem",
-          height: "4.5rem",
-          width: "93%",
-          backgroundColor: "#4f555f",
-          color: "rgb(218, 214, 214)",
-        }}
-      >
-        New Text File
-      </Button>
     </Container>
     </div>
   );

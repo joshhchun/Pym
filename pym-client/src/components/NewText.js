@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
@@ -13,6 +13,13 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import CodeIcon from "@mui/icons-material/Code";
 import { useNavigate } from "react-router-dom";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Grow from "@mui/material/Grow";
+import Paper from "@mui/material/Paper";
+import Popper from "@mui/material/Popper";
+import MenuItem from "@mui/material/MenuItem";
+import MenuList from "@mui/material/MenuList";
+import Stack from "@mui/material/Stack";
 
 const theme = createTheme({
   palette: {
@@ -26,6 +33,8 @@ const theme = createTheme({
 const NewText = () => {
   const [value, setValue] = useState("");
   const [language, setLanguage] = useState("python");
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef(null);
   const navigate = useNavigate();
 
   const handleClick = async (e) => {
@@ -38,12 +47,41 @@ const NewText = () => {
         body: JSON.stringify(request),
       });
       const data = await response.json();
-      console.log(data);
       navigate(`/${data.shortId}`);
     } catch (e) {
       console.log(e.message);
     }
   };
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+    setOpen(false);
+  };
+
+  function handleListKeyDown(event) {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      setOpen(false);
+    } else if (event.key === 'Escape') {
+      setOpen(false);
+    }
+  }
+
+  // return focus to the button when we transitioned from !open -> open
+  const prevOpen = useRef(open);
+  useEffect(() => {
+    if (prevOpen.current === true && open === false) {
+      anchorRef.current.focus();
+    }
+
+    prevOpen.current = open;
+  }, [open]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -75,13 +113,70 @@ const NewText = () => {
               pym
             </Typography>
             <Button
-              color="inherit"
-              component="a"
-              href="/new"
-              sx={{ textDecorations: "none", fontWeight: "700" }}
+              ref={anchorRef}
+              id="composition-button"
+              aria-controls={open ? "composition-menu" : undefined}
+              aria-expanded={open ? "true" : undefined}
+              aria-haspopup="true"
+              onClick={handleToggle}
+              sx={{
+                color: "white",
+                textDecoration: "none",
+                fontWeight: "700",
+              }}
             >
-              new
+              New
             </Button>
+            <Popper
+              open={open}
+              anchorEl={anchorRef.current}
+              role={undefined}
+              style = {{
+                  zIndex: 4
+              }}
+              placement="bottom-start"
+              transition
+              disablePortal
+            >
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  style={{
+                    transformOrigin:
+                      placement === "bottom-start" ? "left top" : "left bottom",
+                      zIndex: 3
+                  }}
+                >
+                  <Paper>
+                    <ClickAwayListener onClickAway={handleClose}>
+                      <MenuList
+                        autoFocusItem={open}
+                        id="composition-menu"
+                        aria-labelledby="composition-button"
+                        onKeyDown={handleListKeyDown}
+                        sx={{
+                          backgroundColor: "#4f555f",
+                          color: "white",
+                        }}
+                        style = {{
+                            zIndex: 3
+                        }}
+                      >
+                        <MenuItem
+                          component="a"
+                          href="/newtext"
+                          onClick={handleClose}
+                        >
+                          Text
+                        </MenuItem>
+                        <MenuItem component = "a" href = "/newimage" onClick={handleClose}>Image</MenuItem>
+                        <MenuItem onClick={handleClose}>URL</MenuItem>
+                      </MenuList>
+                    </ClickAwayListener>
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
             <Button
               color="inherit"
               component="a"
@@ -96,7 +191,8 @@ const NewText = () => {
       <div>
         <FormControl
           sx={{
-            my: "3rem",
+            mt: "3rem",
+            mb: "2rem",
             width: "90%",
           }}
           focused
@@ -117,6 +213,10 @@ const NewText = () => {
               setLanguage(v);
             }}
             value={language}
+            style = {{
+                width: "20%",
+                zIndex: 2
+            }}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -128,9 +228,8 @@ const NewText = () => {
                     position: "relative",
                     textAlign: "center",
                     backgroundColor: "#2b303b",
-                    // backgroundColor: "red",
                     border: "1px solid #a1a1aa",
-                    fontSize: 16,
+                    fontSize: "1rem",
                     color: "white",
                     transition: theme.transitions.create([
                       "border-color",
