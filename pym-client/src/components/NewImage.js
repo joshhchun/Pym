@@ -6,9 +6,7 @@ import "../App.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import "filepond/dist/filepond.min.css";
 import { useNavigate } from "react-router-dom";
-import TextField from "@mui/material/TextField";
 import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
 import NavBar from "./NavBar"
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
@@ -28,7 +26,6 @@ const NewPost = (props) => {
         allowMultiple={false}
         maxFiles={1}
         server={{
-          // url: "http://localhost:3000/save/image",
           url: "http://localhost:3000/save/",
           process: {
             onload: (response) => {

@@ -45,7 +45,7 @@ const hashFile = (content) => {
 // API Endpoint for uploading an image
 router.post("/", upload.single("files"), async (req, response) => {
   try {
-    // If file already exists then just return existing shortID
+    // Hashing the file to see if post already exists in the database
     const fileBuffer = req.file ? fs.readFileSync("/usr/src/app/" + req.file.path) : req.body.value;
     const hexDigest = hashFile(fileBuffer);
     Post.findOne({ hash: hexDigest })
