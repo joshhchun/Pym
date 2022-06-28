@@ -58,7 +58,7 @@ const Display = () => {
               maxWidth: "100%",
               maxHeight: "100%",
             }}
-            src={require(`/usr/src/app/src/${text}`)}
+            // src={require(`/usr/src/app/src/${text}`)}
             alt={"Oops! Image not here"}
           />
         </Container>

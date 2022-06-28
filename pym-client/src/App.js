@@ -6,6 +6,7 @@ import NewImage from "./components/NewImage";
 import Display from "./components/Display";
 import ErrorPage from "./components/Display";
 import NewText from "./components/NewText";
+import URL from "./components/URL"
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/newtext" element={<NewText />} />
           <Route path="/newimage" element={<NewImage />} />
+          <Route path="/url" element={<URL />} />
           <Route path="/:id" element={<Display />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>

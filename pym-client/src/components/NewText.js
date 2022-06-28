@@ -45,7 +45,7 @@ const NewText = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
       });
-      const data = await response.json()
+      const data = await response.json();
       console.log("response " + data);
       navigate(`/${data.shortId}`);
     } catch (e) {
@@ -65,10 +65,10 @@ const NewText = () => {
   };
 
   function handleListKeyDown(event) {
-    if (event.key === 'Tab') {
+    if (event.key === "Tab") {
       event.preventDefault();
       setOpen(false);
-    } else if (event.key === 'Escape') {
+    } else if (event.key === "Escape") {
       setOpen(false);
     }
   }
@@ -120,19 +120,21 @@ const NewText = () => {
               aria-haspopup="true"
               onClick={handleToggle}
               sx={{
+                fontSize: "1.2rem",
+                textTransform: "none",
                 color: "white",
                 textDecoration: "none",
                 fontWeight: "700",
               }}
             >
-              New
+              new
             </Button>
             <Popper
               open={open}
               anchorEl={anchorRef.current}
               role={undefined}
-              style = {{
-                  zIndex: 4
+              style={{
+                zIndex: 4,
               }}
               placement="bottom-start"
               transition
@@ -144,10 +146,10 @@ const NewText = () => {
                   style={{
                     transformOrigin:
                       placement === "bottom-start" ? "left top" : "left bottom",
-                      zIndex: 3
+                    zIndex: 3,
                   }}
                 >
-                  <Paper>
+                  <Paper elevation={4}>
                     <ClickAwayListener onClickAway={handleClose}>
                       <MenuList
                         autoFocusItem={open}
@@ -158,19 +160,36 @@ const NewText = () => {
                           backgroundColor: "#4f555f",
                           color: "white",
                         }}
-                        style = {{
-                            zIndex: 3
+                        style={{
+                          zIndex: 3,
                         }}
                       >
                         <MenuItem
+                          style={{
+                            fontWeight: 700,
+                          }}
                           component="a"
                           href="/newtext"
                           onClick={handleClose}
                         >
-                          Text
+                          text
                         </MenuItem>
-                        <MenuItem component = "a" href = "/newimage" onClick={handleClose}>Image</MenuItem>
-                        <MenuItem onClick={handleClose}>URL</MenuItem>
+                        <MenuItem
+                          style={{ fontWeight: 700 }}
+                          component="a"
+                          href="/newimage"
+                          onClick={handleClose}
+                        >
+                          image
+                        </MenuItem>
+                        <MenuItem
+                          component="a"
+                          href="/url"
+                          style={{ fontWeight: 700 }}
+                          onClick={handleClose}
+                        >
+                          url
+                        </MenuItem>
                       </MenuList>
                     </ClickAwayListener>
                   </Paper>
@@ -181,7 +200,12 @@ const NewText = () => {
               color="inherit"
               component="a"
               onClick={handleClick}
-              sx={{ textDecorations: "none", fontWeight: "700" }}
+              sx={{
+                fontSize: "1.2rem",
+                textTransform: "none",
+                textDecorations: "none",
+                fontWeight: "700",
+              }}
             >
               save
             </Button>
@@ -213,9 +237,9 @@ const NewText = () => {
               setLanguage(v);
             }}
             value={language}
-            style = {{
-                width: "20%",
-                zIndex: 2
+            style={{
+              width: "20%",
+              zIndex: 2,
             }}
             renderInput={(params) => (
               <TextField

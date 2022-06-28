@@ -50,7 +50,7 @@ export default function NavBar(props) {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{ backgroundColor: "#434852" }}>
+      <AppBar position="static" sx={{ backgroundColor: "slategray" }}>
         <Toolbar>
           <IconButton
             size="large"
@@ -84,12 +84,14 @@ export default function NavBar(props) {
             aria-haspopup="true"
             onClick={handleToggle}
             sx = {{
+              textTransform: "none",
+              fontSize: "1.2rem",
                 color: "white",
                 textDecoration: "none",
                 fontWeight: "700",
             }}
           >
-            New
+            new
           </Button>
           <Popper
             open={open}
@@ -98,6 +100,9 @@ export default function NavBar(props) {
             placement="bottom-start"
             transition
             disablePortal
+            style = {{
+              zIndex: 4
+            }}
           >
             {({ TransitionProps, placement }) => (
               <Grow
@@ -107,7 +112,7 @@ export default function NavBar(props) {
                     placement === "bottom-start" ? "left top" : "left bottom",
                 }}
               >
-                <Paper>
+                <Paper elevation = {4}>
                   <ClickAwayListener onClickAway={handleClose}>
                     <MenuList
                       autoFocusItem={open}
@@ -115,13 +120,20 @@ export default function NavBar(props) {
                       aria-labelledby="composition-button"
                       onKeyDown={handleListKeyDown}
                       sx = {{
-                          backgroundColor: "#4f555f",
+                          // backgroundColor: "#626874",
+                          backgroundColor: "#334756",
                           color: "white"
                       }}
                     >
-                      <MenuItem component = "a" href = "/newtext"  onClick={handleClose}>Text</MenuItem>
-                      <MenuItem component = "a" href = "/newimage" onClick={handleClose}>Image</MenuItem>
-                      <MenuItem onClick={handleClose}>URL</MenuItem>
+                      <MenuItem style = {{
+                        fontWeight: 700
+                      }} component = "a" href = "/newtext"  onClick={handleClose}>text</MenuItem>
+                      <MenuItem style = {{
+                        fontWeight: 700
+                      }} component = "a" href = "/newimage" onClick={handleClose}>image</MenuItem>
+                      <MenuItem style = {{
+                        fontWeight: 700
+                      }} component = "a" href = "/url" onClick={handleClose}>url</MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
