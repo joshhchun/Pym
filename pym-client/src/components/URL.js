@@ -1,12 +1,13 @@
 import TextField from "@mui/material/TextField";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import NavBar from "./NavBar";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { InputLabel } from "@mui/material";
 import { FormControl } from "@mui/material";
 import { IconButton } from "@mui/material";
 import ContentPasteGoIcon from "@mui/icons-material/ContentPasteGo";
-import Grid from "@mui/material/Grid";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import "../App.css";
 
 const theme = createTheme({
   palette: {
@@ -25,15 +26,35 @@ const URL = (props) => {
   const [value, setValue] = useState("");
   const [success, setSuccess] = useState(false);
   const [url, setUrl] = useState("https://pym.jchun.me/yeah");
+
+  const handleClick = async (e) => {
+    e.preventDefault();
+    const request = { value, group: "link" }
+    try {
+      const response = await fetch("http://localhost:3000/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
+      });
+      const data = await response.json();
+      console.log("SHORTURL RESPONSE " + data);
+      setUrl(`http://localhost:4000/${data.shortId}`);
+      setSuccess(true);
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+
   return (
     <div>
       <ThemeProvider theme={theme}>
         <NavBar />
         <FormControl
           sx={{
-            mt: "5rem",
+            mt: "8rem",
             mb: "2rem",
-            width: "90%",
+            width: "80%",
           }}
           focused
         >
@@ -43,97 +64,85 @@ const URL = (props) => {
           >
             Input URL
           </InputLabel>
-          <TextField
-            placeholder="paste url here..."
-            // fullWidth
-            variant="standard"
-            sx={{
-              my: "1rem",
-              "& .MuiInputBase-input": {
-                borderRadius: 2,
-                height: "2.5rem",
-                position: "relative",
-                textAlign: "center",
-                backgroundColor: "#434852",
-                border: "1px solid #a1a1aa",
-                fontSize: "1rem",
-                color: "white",
-                boxShadow: "0 0 0 0.1rem rgba(255, 255, 255, .5)",
-                transition: theme.transitions.create([
-                  "border-color",
-                  "box-shadow",
-                ]),
-                fontFamily: [
-                  "-apple-system",
-                  "BlinkMacSystemFont",
-                  '"Segoe UI"',
-                  "Roboto",
-                  '"Helvetica Neue"',
-                  "Arial",
-                  "sans-serif",
-                  '"Apple Color Emoji"',
-                  '"Segoe UI Emoji"',
-                  '"Segoe UI Symbol"',
-                ].join(","),
-              },
-            }}
-            color="neutral"
-            id="standard-basic"
-            InputProps={{ disableUnderline: true }}
-          />
-          <Grid container spacing={1}>
-            <Grid item xs={11}>
-              <TextField
-                sx={{
-                  mt: "5rem",
-                  "& .MuiInputBase-input": {
-                    height: "2.5rem",
-                    position: "relative",
-                    textAlign: "center",
-                    fontSize: "1rem",
-                    color: "white",
-                    fontFamily: [
-                      "-apple-system",
-                      "BlinkMacSystemFont",
-                      '"Segoe UI"',
-                      "Roboto",
-                      '"Helvetica Neue"',
-                      "Arial",
-                      "sans-serif",
-                      '"Apple Color Emoji"',
-                      '"Segoe UI Emoji"',
-                      '"Segoe UI Symbol"',
-                    ].join(","),
-                  },
-                }}
-                focused
-                fullWidth
-                placeholder="Generated Short URL will appear here..."
-                id="outlined-read-only-input"
-                variant="standard"
-                color={success ? "valid" : "neutral"}
-                label="Generated Short URL"
-                value={url}
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
-              </Grid>
-              <Grid item xs={1}>
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                onClick={() => {
-                  navigator.clipboard.writeText(url);
-                }}
-                sx={{ mt: "7rem"}}
-              >
-                <ContentPasteGoIcon />
-              </IconButton>
-            </Grid>
-          </Grid>
+          <div className="copy">
+            <TextField
+              placeholder="paste url here..."
+              variant="standard"
+              fullWidth
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              sx={{
+                mt: "1rem",
+                "& .MuiInputBase-input": {
+                  borderRadius: 2,
+                  height: "2.5rem",
+                  position: "relative",
+                  textAlign: "center",
+                  backgroundColor: "#434852",
+                  border: "1px solid #a1a1aa",
+                  fontSize: "1rem",
+                  color: "white",
+                  boxShadow: "0 0 0 0.1rem rgba(255, 255, 255, .5)",
+                  transition: theme.transitions.create([
+                    "border-color",
+                    "box-shadow",
+                  ]),
+                },
+              }}
+              color="neutral"
+              id="standard-basic"
+              InputProps={{ disableUnderline: true }}
+            />
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={handleClick}
+              sx={{ mt: "7rem", position: "relative", left: "1rem", bottom: "6rem" }}
+            >
+              <UploadFileIcon sx={{ fontSize: "2rem", color: "white" }} />
+            </IconButton>
+          </div>
+          <div className="copy">
+            <TextField
+              sx={{
+                mt: "5rem",
+                "& .MuiInputBase-input": {
+                  backgroundColor: success ? "rgba(119, 221, 119, .2)" : null,
+                  borderRadius: 2,
+                  height: "2.5rem",
+                  position: "relative",
+                  textAlign: "center",
+                  fontSize: "1rem",
+                  color: "white",
+                },
+              }}
+              focused
+              fullWidth
+              placeholder="Generated Short URL will appear here..."
+              id="outlined-read-only-input"
+              variant="standard"
+              color={success ? "valid" : "neutral"}
+              label="Generated Short URL"
+              value={url}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={() => {
+                navigator.clipboard.writeText(url);
+              }}
+              sx={{ mt: "7rem", position: "relative", left: "1rem", bottom: "0.5rem" }}
+            >
+              <ContentPasteGoIcon sx={{ fontSize: "1.8rem", color: "white" }} />
+            </IconButton>
+          </div>
         </FormControl>
       </ThemeProvider>
     </div>

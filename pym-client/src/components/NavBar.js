@@ -12,10 +12,29 @@ import Paper from "@mui/material/Paper";
 import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
+import { useNavigate } from "react-router";
 
 export default function NavBar(props) {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
+
+  const handleClick = async (e) => {
+    e.preventDefault();
+    const request = { group: "text", language: props.language, value: props.value };
+    try {
+      const response = await fetch("http://localhost:3000/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
+      });
+      const data = await response.json();
+      console.log("response " + data);
+      navigate(`/${data.shortId}`);
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -30,10 +49,10 @@ export default function NavBar(props) {
   };
 
   function handleListKeyDown(event) {
-    if (event.key === 'Tab') {
+    if (event.key === "Tab") {
       event.preventDefault();
       setOpen(false);
-    } else if (event.key === 'Escape') {
+    } else if (event.key === "Escape") {
       setOpen(false);
     }
   }
@@ -83,12 +102,12 @@ export default function NavBar(props) {
             aria-expanded={open ? "true" : undefined}
             aria-haspopup="true"
             onClick={handleToggle}
-            sx = {{
+            sx={{
               textTransform: "none",
               fontSize: "1.2rem",
-                color: "white",
-                textDecoration: "none",
-                fontWeight: "700",
+              color: "white",
+              textDecoration: "none",
+              fontWeight: "700",
             }}
           >
             new
@@ -100,8 +119,8 @@ export default function NavBar(props) {
             placement="bottom-start"
             transition
             disablePortal
-            style = {{
-              zIndex: 4
+            style={{
+              zIndex: 4,
             }}
           >
             {({ TransitionProps, placement }) => (
@@ -112,28 +131,49 @@ export default function NavBar(props) {
                     placement === "bottom-start" ? "left top" : "left bottom",
                 }}
               >
-                <Paper elevation = {4}>
+                <Paper elevation={4}>
                   <ClickAwayListener onClickAway={handleClose}>
                     <MenuList
                       autoFocusItem={open}
                       id="composition-menu"
                       aria-labelledby="composition-button"
                       onKeyDown={handleListKeyDown}
-                      sx = {{
-                          // backgroundColor: "#626874",
-                          backgroundColor: "#334756",
-                          color: "white"
+                      sx={{
+                        // backgroundColor: "#626874",
+                        backgroundColor: "#334756",
+                        color: "white",
                       }}
                     >
-                      <MenuItem style = {{
-                        fontWeight: 700
-                      }} component = "a" href = "/newtext"  onClick={handleClose}>text</MenuItem>
-                      <MenuItem style = {{
-                        fontWeight: 700
-                      }} component = "a" href = "/newimage" onClick={handleClose}>image</MenuItem>
-                      <MenuItem style = {{
-                        fontWeight: 700
-                      }} component = "a" href = "/url" onClick={handleClose}>url</MenuItem>
+                      <MenuItem
+                        style={{
+                          fontWeight: 700,
+                        }}
+                        component="a"
+                        href="/newtext"
+                        onClick={handleClose}
+                      >
+                        text
+                      </MenuItem>
+                      <MenuItem
+                        style={{
+                          fontWeight: 700,
+                        }}
+                        component="a"
+                        href="/newimage"
+                        onClick={handleClose}
+                      >
+                        image
+                      </MenuItem>
+                      <MenuItem
+                        style={{
+                          fontWeight: 700,
+                        }}
+                        component="a"
+                        href="/url"
+                        onClick={handleClose}
+                      >
+                        url
+                      </MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
@@ -144,7 +184,13 @@ export default function NavBar(props) {
             <Button
               color="inherit"
               component="a"
-              sx={{ textDecorations: "none", fontWeight: "700" }}
+              onClick={handleClick}
+              sx={{
+                textTransform: "none",
+                fontSize: "1.2rem",
+                textDecorations: "none",
+                fontWeight: "700",
+              }}
             >
               save
             </Button>

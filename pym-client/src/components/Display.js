@@ -29,14 +29,17 @@ const Display = () => {
         setLanguage("plaintext");
         setText("No post with that ID! Sorry :P");
       } else {
-        if (data.isImage) {
+        if (data.group === "image") {
           setIsImage(true);
-        } else {
+          setText(data.value);
+        } else if (data.group === "text") {
           setIsImage(false);
           setLanguage(data.langauge);
           console.log(data.language);
+          setText(data.value);
+        } else if (data.group === "link") {
+          window.location.href = data.value;
         }
-        setText(data.value);
       }
     } catch (e) {
       console.log(e.message);
@@ -58,7 +61,7 @@ const Display = () => {
               maxWidth: "100%",
               maxHeight: "100%",
             }}
-            // src={require(`/usr/src/app/src/${text}`)}
+            src={require(`/usr/src/app/src/${text}`)}
             alt={"Oops! Image not here"}
           />
         </Container>
