@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
 import NewImage from "./components/NewImage";
 import Display from "./components/Display";
-import ErrorPage from "./components/Display";
 import NewText from "./components/NewText";
 import URL from "./components/URL"
 
@@ -18,7 +17,6 @@ function App() {
           <Route path="/newimage" element={<NewImage />} />
           <Route path="/url" element={<URL />} />
           <Route path="/:id" element={<Display />} />
-          <Route path="*" element={<ErrorPage />} />
         </Routes>
       </Router>
     </div>

@@ -19,7 +19,6 @@ const Display = () => {
       try {
         const response = await fetch(`http://localhost:3000/${id}`);
         const data = await response.json();
-        console.log(data.value);
         // If there is no data response then there is no post with the inputed ID
         if (!data) {
           setIsImage(false);
@@ -60,7 +59,7 @@ const Display = () => {
               maxWidth: "100%",
               maxHeight: "100%",
             }}
-            // src={require(`/usr/src/app/src/${text}`)}
+            src={require(`/usr/src/app/src/${text}`)}
             alt={"Oops! Image not here"}
           />
         </Container>
