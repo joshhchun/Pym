@@ -56,6 +56,7 @@ const NewText = () => {
             }}
             renderInput={(params) => (
               <TextField
+              focused
                 {...params}
                 sx={{
                   mt: "1rem",
@@ -64,7 +65,7 @@ const NewText = () => {
                     height: "2.5rem",
                     position: "relative",
                     textAlign: "center",
-                    backgroundColor: "#2b303b",
+                    backgroundColor: "#434852",
                     border: "1px solid #a1a1aa",
                     fontSize: "1rem",
                     color: "white",
@@ -72,21 +73,8 @@ const NewText = () => {
                       "border-color",
                       "box-shadow",
                     ]),
-                    fontFamily: [
-                      "-apple-system",
-                      "BlinkMacSystemFont",
-                      '"Segoe UI"',
-                      "Roboto",
-                      '"Helvetica Neue"',
-                      "Arial",
-                      "sans-serif",
-                      '"Apple Color Emoji"',
-                      '"Segoe UI Emoji"',
-                      '"Segoe UI Symbol"',
-                    ].join(","),
                     "&:focus": {
                       borderRadius: 2,
-                      backgroundColor: "#434852",
                       borderColor: "#e8f3ff",
                       boxShadow: "0 0 0 0.2rem rgba(255, 255, 255, .5)",
                     },

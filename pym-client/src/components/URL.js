@@ -25,7 +25,7 @@ const theme = createTheme({
 const URL = (props) => {
   const [value, setValue] = useState("");
   const [success, setSuccess] = useState(false);
-  const [url, setUrl] = useState("https://pym.jchun.me/yeah");
+  const [url, setUrl] = useState("");
 
   const handleClick = async (e) => {
     e.preventDefault();

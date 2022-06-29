@@ -69,14 +69,14 @@ export default function NavBar(props) {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{ backgroundColor: "slategray" }}>
+      <AppBar position="sticky" sx={{ backgroundColor: "#353b48" }}>
         <Toolbar>
           <IconButton
             size="large"
             edge="start"
             color="inherit"
             aria-label="menu"
-            sx={{ mr: 2 }}
+            sx={{ mr: 2, color: "white" }}
           >
             <CodeIcon />
           </IconButton>
@@ -88,7 +88,7 @@ export default function NavBar(props) {
               flexGrow: 1,
               textAlign: "justify",
               mt: "-4px",
-              color: "inherit",
+              color: "white",
               textDecoration: "none",
               fontWeight: "700",
             }}
@@ -139,7 +139,6 @@ export default function NavBar(props) {
                       aria-labelledby="composition-button"
                       onKeyDown={handleListKeyDown}
                       sx={{
-                        // backgroundColor: "#626874",
                         backgroundColor: "#334756",
                         color: "white",
                       }}
@@ -188,6 +187,7 @@ export default function NavBar(props) {
               sx={{
                 textTransform: "none",
                 fontSize: "1.2rem",
+                color: "white",
                 textDecorations: "none",
                 fontWeight: "700",
               }}

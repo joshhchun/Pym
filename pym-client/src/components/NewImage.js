@@ -13,14 +13,14 @@ registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 // , FilePondPluginFileEncode
 const NewPost = (props) => {
   const [file, setFile] = useState([]);
-  const [link, setLink] = useState("Import an image for a link");
   const navigate = useNavigate();
 
   return (
     <div>
     <NavBar />
-    <Container>
+    <Container sx = {{ my: "8rem"}}>
       <FilePond
+        className="fp"
         files={file}
         onupdatefiles={setFile}
         allowMultiple={false}
@@ -30,20 +30,12 @@ const NewPost = (props) => {
           process: {
             onload: (response) => {
               const data = JSON.parse(response)
-              console.log(data);
-              // console.log(response.shortId);
-              // console.log("response " + response);
-              // console.log(response.shortId);
-              // const data = response.json()
-              // console.log(data.shortId);
-              // setLink("http://localhost:4000/" + data.shortId);
               navigate(`/${data.shortId}`);
             },
           },
         }}
         name="files"
         labelIdle='Drag & Drop your file or <span class="filepond--label-action">Browse</span>'
-        className="fp"
       />
     </Container>
     </div>
