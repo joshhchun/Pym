@@ -14,7 +14,7 @@ services:
       context: ./pym-api
       dockerfile: Dockerfile
     ports:
-      - 3000:3001
+      - 3000:3000
     env_file:
       - ./pym-api/.env
     volumes:

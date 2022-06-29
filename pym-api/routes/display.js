@@ -9,7 +9,7 @@ router.get("/:id", async (req, res) => {
     console.log(post)
     res
       .status(200)
-      .json({value: post.value, isImage: post.isImage, language: post.language});
+      .json({value: post.value, group: post.group, language: post.language});
   } catch (e) {
     console.log("No Post with that ID!");
     res.json(null)

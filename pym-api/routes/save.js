@@ -50,13 +50,16 @@ router.post("/", upload.single("files"), async (req, response) => {
     const hexDigest = hashFile(fileBuffer);
     Post.findOne({ hash: hexDigest })
       .then((res) => {
-        // There was a post in the database with same hash so returning existing URL
+        // There was a post in the database with same hash so delete newly added file and return existing URL
         if (res) {
+          fs.unlink("/usr/src/app/" + req.file.path, (err) => {
+            if (err) console.log(err);
+          })
           return response.status(200).json({shortId: res.shortId});
           // There was no existing post with same hash so making new DB entry
         } else {
           Post.create({
-            isImage: req.file ? true : false,
+            group: req.file ? "image" : req.body.group,
             value: req.file ? req.file.path : req.body.value,
             hash: hexDigest,
             language: req.body.language,

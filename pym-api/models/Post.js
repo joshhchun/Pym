@@ -8,14 +8,13 @@ const postScheme = new mongoose.Schema({
     default: () => nanoid(4),
     index: { unique: true },
   },
+  group: {
+    type: String,
+    required: true,
+  },
   value: {
     type: String,
-    required: false,
-  },
-  isImage: {
-    type: Boolean,
     required: true,
-    default: false,
   },
   hash: {
     type: String,
