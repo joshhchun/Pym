@@ -17,7 +17,7 @@ const Display = () => {
     // Function to fetch the data from backend
     const fetchData = async (id) => {
       try {
-        const response = await fetch(`http://localhost:3000/${id}`);
+        const response = await fetch(`https://api.pym.jchun.me/${id}`);
         const data = await response.json();
         // If there is no data response then there is no post with the inputed ID
         if (!data) {
@@ -26,12 +26,11 @@ const Display = () => {
           setText("No post with that ID! Sorry :P");
         } else {
           if (data.group === "image") {
+            // setText(data.value);
             setIsImage(true);
-            setText(data.value);
           } else if (data.group === "text") {
             setIsImage(false);
-            setLanguage(data.langauge);
-            console.log(data.language);
+            setLanguage(data.language);
             setText(data.value);
           } else if (data.group === "link") {
             window.location.href = data.value;
@@ -59,7 +58,7 @@ const Display = () => {
               maxWidth: "100%",
               maxHeight: "100%",
             }}
-            src={require(`/usr/src/app/src/${text}`)}
+            src = {"https://api.pym.jchun.me/image/" + id}
             alt={"Oops! Image not here"}
           />
         </Container>

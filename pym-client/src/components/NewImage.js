@@ -26,7 +26,7 @@ const NewPost = (props) => {
         allowMultiple={false}
         maxFiles={1}
         server={{
-          url: "http://localhost:3000/save/",
+          url: "https://api.pym.jchun.me/save/",
           process: {
             onload: (response) => {
               const data = JSON.parse(response)

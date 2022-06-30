@@ -23,7 +23,7 @@ export default function NavBar(props) {
     e.preventDefault();
     const request = { group: "text", language: props.language, value: props.value };
     try {
-      const response = await fetch("http://localhost:3000/save", {
+      const response = await fetch("https://api.pym.jchun.me/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),

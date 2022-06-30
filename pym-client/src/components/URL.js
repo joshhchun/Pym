@@ -31,14 +31,14 @@ const URL = (props) => {
     e.preventDefault();
     const request = { value, group: "link" }
     try {
-      const response = await fetch("http://localhost:3000/save", {
+      const response = await fetch("https://api.pym.jchun.me/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
       });
       const data = await response.json();
       console.log("SHORTURL RESPONSE " + data);
-      setUrl(`http://localhost:4000/${data.shortId}`);
+      setUrl(`https://pym.jchun.me/${data.shortId}`);
       setSuccess(true);
     } catch (e) {
       console.log(e.message);

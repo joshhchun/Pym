@@ -12,6 +12,7 @@ app.use(cors());
 // const uploadRouter = require("./routes/upload")
 const saveRouter = require("./routes/save");
 const displayRouter = require("./routes/display");
+const imageRouter = require("./routes/image");
 
 const Post = require("./models/Post");
 const mongoose = require("mongoose");
@@ -19,8 +20,9 @@ const mongoose = require("mongoose");
 require("./initDB")();
 
 app.use('/', displayRouter);
+app.use('/image', imageRouter);
 app.use('/save', saveRouter);
 // app.use('/new', uploadRouter);
 
 // Listen on Port 3000
-app.listen(3000);
+app.listen(5000);
