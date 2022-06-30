@@ -42,6 +42,13 @@ const hashFile = (content) => {
     return hashSum.digest("hex");
 };
 
+// Function to update the expiration time
+const updateExpire = () => {
+    var date = new Date(); // Now
+    date.setDate(date.getDate() + 30); // Set now + 30 days as the new date
+    return date;
+}
+
 // API Endpoint for uploading an image
 router.post("/", upload.single("files"), async (req, response) => {
     try {
@@ -61,12 +68,14 @@ router.post("/", upload.single("files"), async (req, response) => {
                     // There was no existing post with same hash so making new DB entry
                 } else {
                     Post.create({
+                        "expireAt": updateExpire(),
                         group: req.file ? "image" : req.body.group,
                         value: req.file ? req.file.path : req.body.value,
                         hash: hexDigest,
                         language: req.body.language,
                     })
                         .then((res) => {
+                            console.log(res);
                             return response.status(200).json({ shortId: res.shortId });
                         })
                         .catch((e) => {

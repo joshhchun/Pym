@@ -3,7 +3,7 @@ const dotenv = require("dotenv").config();
 const cors = require("cors");
 const app = express();
 // const redisClient = require("redis").createClient;
-// const redis = redisCleint(6379, 'localhost');
+// const redis = redisCleint(process.env.REDIS_PORT, process.env.REDIS_URL);
 
 app.use(express.static("public"));
 app.use(express.static("uploads"));
