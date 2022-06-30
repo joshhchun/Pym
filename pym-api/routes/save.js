@@ -45,7 +45,7 @@ const hashFile = (content) => {
 // Function to update the expiration time
 const updateExpire = () => {
     var date = new Date(); // Now
-    date.setDate(date.getDate() + 30); // Set now + 30 days as the new date
+    date.setDate(date.getDate() + 15); // Set now + 30 days as the new date
     return date;
 }
 

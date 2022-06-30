@@ -5,7 +5,7 @@ const Post = require("../models/Post");
 // Function to update the expiration time
 const updateExpire = () => {
     var date = new Date(); // Now
-    date.setDate(date.getDate() + 30); // Set now + 30 days as the new date
+    date.setDate(date.getDate() + 15); // Set now + 15 days as the new date
     return date;
 }
 // API Endpoint to retrieve post data from the database
@@ -16,6 +16,7 @@ router.get("/:id", async (req, res) => {
         res
             .status(200)
             .json({ value: post.value, group: post.group, language: post.language });
+        // If a user visits a post, reset its expiration date
         Post.findOneAndUpdate({ shortId: req.params.id }, { expireAt: updateExpire() }, (err, docs) => {
             if (err) console.log(err);
         })
