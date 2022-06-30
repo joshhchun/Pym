@@ -2,6 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv").config();
 const cors = require("cors");
 const app = express();
+// const redisClient = require("redis").createClient;
+// const redis = redisCleint(6379, 'localhost');
 
 app.use(express.static("public"));
 app.use(express.static("uploads"));
@@ -19,9 +21,9 @@ const mongoose = require("mongoose");
 // Init MongoDB
 require("./initDB")();
 
-app.use('/', displayRouter);
-app.use('/image', imageRouter);
-app.use('/save', saveRouter);
+app.use('/api', displayRouter);
+app.use('/api/image', imageRouter);
+app.use('/api/save', saveRouter);
 // app.use('/new', uploadRouter);
 
 // Listen on Port 3000

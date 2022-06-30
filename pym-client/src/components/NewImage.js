@@ -12,34 +12,34 @@ import NavBar from "./NavBar"
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 // , FilePondPluginFileEncode
 const NewPost = (props) => {
-  const [file, setFile] = useState([]);
-  const navigate = useNavigate();
+    const [file, setFile] = useState([]);
+    const navigate = useNavigate();
 
-  return (
-    <div>
-    <NavBar />
-    <Container sx = {{ my: "8rem"}}>
-      <FilePond
-        className="fp"
-        files={file}
-        onupdatefiles={setFile}
-        allowMultiple={false}
-        maxFiles={1}
-        server={{
-          url: "https://api.pym.jchun.me/save/",
-          process: {
-            onload: (response) => {
-              const data = JSON.parse(response)
-              navigate(`/${data.shortId}`);
-            },
-          },
-        }}
-        name="files"
-        labelIdle='Drag & Drop your file or <span class="filepond--label-action">Browse</span>'
-      />
-    </Container>
-    </div>
-  );
+    return (
+        <div>
+            <NavBar />
+            <Container sx={{ my: "8rem" }}>
+                <FilePond
+                    className="fp"
+                    files={file}
+                    onupdatefiles={setFile}
+                    allowMultiple={false}
+                    maxFiles={1}
+                    server={{
+                        url: "https://pym.jchun.me/api/save/",
+                        process: {
+                            onload: (response) => {
+                                const data = JSON.parse(response)
+                                navigate(`/${data.shortId}`);
+                            },
+                        },
+                    }}
+                    name="files"
+                    labelIdle='Drag & Drop your file or <span class="filepond--label-action">Browse</span>'
+                />
+            </Container>
+        </div>
+    );
 };
 
 export default NewPost;
