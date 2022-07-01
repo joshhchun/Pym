@@ -23,9 +23,12 @@ const postScheme = new mongoose.Schema({
     language: {
         type: String,
         required: false
+    },
+    expireAt: {
+        type: Date
     }
-}, { timestamps: true });
+});
 
-postScheme.index({ "expireAt": 1 }, { expireAfterSeconds: 0 })
+postScheme.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
 module.exports = mongoose.model("Post", postScheme);

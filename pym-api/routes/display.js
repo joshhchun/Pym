@@ -3,7 +3,7 @@ const router = express.Router({ mergeParams: true });
 const Post = require("../models/Post");
 
 // Function to update the expiration time
-const updateExpire = () => {
+function updateExpire() {
     var date = new Date(); // Now
     date.setDate(date.getDate() + 15); // Set now + 15 days as the new date
     return date;

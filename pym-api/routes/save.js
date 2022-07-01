@@ -43,9 +43,9 @@ const hashFile = (content) => {
 };
 
 // Function to update the expiration time
-const updateExpire = () => {
+function updateExpire() {
     var date = new Date(); // Now
-    date.setDate(date.getDate() + 15); // Set now + 30 days as the new date
+    date.setDate(date.getDate() + 15); // Set now + 15 days as the new date
     return date;
 }
 
@@ -68,7 +68,7 @@ router.post("/", upload.single("files"), async (req, response) => {
                     // There was no existing post with same hash so making new DB entry
                 } else {
                     Post.create({
-                        "expireAt": updateExpire(),
+                        expireAt: updateExpire(),
                         group: req.file ? "image" : req.body.group,
                         value: req.file ? req.file.path : req.body.value,
                         hash: hexDigest,

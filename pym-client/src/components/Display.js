@@ -25,15 +25,15 @@ const Display = () => {
                     setLanguage("plaintext");
                     setText("No post with that ID! Sorry :P");
                 } else {
-                    if (data.group === "image") {
-                        // setText(data.value);
+                    if (data.group === "link") {
+                        window.location.href = data.value;
+                    }
+                    else if (data.group === "image") {
                         setIsImage(true);
                     } else if (data.group === "text") {
                         setIsImage(false);
                         setLanguage(data.language);
                         setText(data.value);
-                    } else if (data.group === "link") {
-                        window.location.href = data.value;
                     }
                 }
             } catch (e) {
@@ -42,7 +42,6 @@ const Display = () => {
         };
         fetchData(id);
     }, []);
-
     if (isImage) {
         return (
             <div>
@@ -78,6 +77,6 @@ const Display = () => {
                 </SyntaxHighlighter>
             </div>
         );
-    }
-};
+    };
+}
 export default Display;
