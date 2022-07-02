@@ -22,7 +22,7 @@ const NewPost = (props) => {
                 <FilePond
                     className="fp"
                     files={file}
-                    onupdatefiles={setFile}
+                    onupdatefiles={(file) => { setFile(file) }}
                     allowMultiple={false}
                     maxFiles={1}
                     server={{

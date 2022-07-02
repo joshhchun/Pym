@@ -58,7 +58,7 @@ const Display = () => {
                             maxHeight: "100%",
                         }}
                         src={"https://pym.jchun.me/api/image/" + id}
-                        alt={"Oops! Image not here"}
+                        alt={"Not loading properly!"}
                     />
                 </Container>
             </div>
