@@ -14,24 +14,23 @@ services:
       context: ./pym-api
       dockerfile: Dockerfile
     ports:
-      - 3000:3000
+      - ${PYM_API_PORT}
     env_file:
       - ./pym-api/.env
     volumes:
-     - uploads:/usr/src/app/uploads
+     - uploads:${PYM_API_UPLOADS}
     depends_on:
     - mongo_db
   
   pym-client:
+    # React/Nginx Service
     build:
       context: ./pym-client
       dockerfile: Dockerfile
     ports:
-      - 4000:4000
-    environment:
-      PORT: 4000
+      - ${PYM_CLIENT_PORT}
     volumes:
-     - uploads:/usr/src/app/src/uploads
+     - uploads:${PYM_CLIENT_UPLOADS}
 
 volumes:
   mongo_db: {}
