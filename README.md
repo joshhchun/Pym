@@ -1,8 +1,8 @@
-### Tech Stack:
+## Tech Stack:
 
 _MERN (MongoDB, Express.JS, React.JS, Node.JS), Docker, Nginx, & Caddy_
 
-## What is it?
+# What is it?
 
 Pym is a syntax-highlighted code/image pastebin and URL shortener that allows you to share your code/images easily. You are able to paste the code or upload the file itself. The name originates from Marvel's _pym particles_, which are the particles that allow Ant-Man and Wasp-Woman to shrink.
 
@@ -19,7 +19,7 @@ Every post is created with a default life time of **15 days**. However, I wanted
 |:--:|
 | _Creating a new post with a code snippet and sharing URL_ |
 
-## Why?
+# Why?
 
 The reason for Pym's creation can be boiled down to a couple of points.
 
@@ -31,7 +31,7 @@ There have been so many occasions where my friends and I wanted to share some co
 
 We have tried everything from the OG [Pastebin](https://pastebin.com/), Google Docs, to Email (yes.. _email_), but there was no solution that was _quite_ right. The lack of syntax highlighting or terrible/messy UI... it seemed like there had to be a better solution - _and that is why I made Pym._
 
-## How to use?
+# How to use?
 
 My main goal when developing this application was to _keep it simple_.
 
@@ -39,7 +39,7 @@ Yes, features are great but having too much configuration can very easily lead t
 
 To make a new post, a user just has to click on the `new` button on the top right corner of the home page (https://pym.jchun.me), and from there they can choose to either
 
-### Paste text
+## Paste text
 <img width="835" alt="newtext1" src="https://user-images.githubusercontent.com/76039575/177060842-434b2509-883c-4b3c-909a-b844b6726858.png">
 
 
@@ -54,7 +54,7 @@ curl -d '{"group": "text", "language": "plaintext", "value":"$TEXT"}' \
 
 `Response > {"shortId":"6t5a"}`
 
-### Upload a file
+## Upload a file
 
 <img width="1440" alt="newfile" src="https://user-images.githubusercontent.com/76039575/177060864-e82f8053-95f7-426a-bc48-18d47c3869b0.png">
 
@@ -62,7 +62,7 @@ curl -d '{"group": "text", "language": "plaintext", "value":"$TEXT"}' \
 -   Currently supports **JPEG**, **PNG**, **HEIC**, **.txt**, **.py**, and **.js**. More file support will be coming shortly.
 -   Upon upload, user will be redirected to the new unique URL for sharing.
 
-### Shorten a URL
+## Shorten a URL
 
 <img width="1439" alt="newurl" src="https://user-images.githubusercontent.com/76039575/177060873-27bcdfc6-786c-402d-ab5b-464255f0a799.png">
 
@@ -77,16 +77,16 @@ https://pym.jchun.me/api/save
 
 `Response > {"shortId":"6t5a"}`
 
-## Future & Updates?
+# Future & Updates?
 
 Right now, I am very happy with where Pym is. I think it is great for _what it's supposed to be_. However, things can always be better.
 
-### Immediate Updates:
+## Immediate Updates:
 
 -   Allow for more file types to be uploaded
 -   Setup Cronjob for automatic database cleanups (every post has a life time of 15 days, but DB could get cluttered)
 
-### Possible Updates:
+## Possible Updates:
 
 -   Setting up a Redis cache for quicker experience (MongoDB already has a _LRU-Like_ cache system with indexes, but it does not save the value retrieved from queries). However, right now I believe the website doesn't have enough users where the memory/speed trade-off would be worth it.
 -   Migrating to a Next.JS / Prisma app? :eyes:
