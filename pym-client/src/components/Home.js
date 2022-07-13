@@ -5,8 +5,9 @@ import NavBar from "./NavBar";
 
 const Home = (props) => {
 
-  const message = 
-`# Welcome to Pym!
+
+  const message =
+    `# Welcome to Pym!
 # Pym is a syntax-higlighted text/image pastebin and URL shortener that allows you to share your code quickly.
 
 def permutations(length, alphabet=ALPHABET):
@@ -29,6 +30,13 @@ def permutations(length, alphabet=ALPHABET):
     <div className="text">
       <NavBar />
       <SyntaxHighlighter
+        // codeTagProps={{
+        //   style: {
+        //     // lineHeight: "0.75",
+        //     fontSize: "1rem"
+        //   }
+        // }}
+        className={"syntax-highlighter"}
         language="python"
         style={ocean}
         showLineNumbers="true"
@@ -36,7 +44,7 @@ def permutations(length, alphabet=ALPHABET):
       >
         {message}
       </SyntaxHighlighter>
-    </div>
+    </div >
   );
 };
 

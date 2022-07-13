@@ -3,6 +3,7 @@
   height: 100%;
 }
 
+
 .filepond--root .filepond--drop-label {
   color: rgb(218, 214, 214);
   /* background: #4f555f; */
@@ -21,6 +22,24 @@
 
 .text {
   text-align: left;
+}
+
+@media only screen and (max-width: 1200px) {
+  .text > .syntax-highlighter {
+    font-size: 95%;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .text > .syntax-highlighter {
+    font-size: 90%;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .text > .syntax-highlighter {
+    font-size: 75%;
+  }
 }
 
 .App-logo {
