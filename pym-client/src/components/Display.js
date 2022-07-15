@@ -17,7 +17,7 @@ const Display = () => {
     // Function to fetch the data from backend
     const fetchData = async (id) => {
       try {
-        const response = await fetch(`https://pym.jchun.me/api/${id}`);
+        const response = await fetch(`https://pym.jchun.me/api/display/${id}`);
         const data = await response.json();
         // If there is no data response then there is no post with the inputed ID
         if (!data) {
@@ -26,7 +26,9 @@ const Display = () => {
           setText("No post with that ID! Sorry :P");
         } else {
           if (data.group === "link") {
-            window.location.href = data.value;
+            if (data.value.startsWith("https://")) window.location.href = data.value;
+            else window.location.href = "https://" + data.value;
+            return;
           }
           else if (data.group === "image") {
             setIsImage(true);
@@ -57,7 +59,7 @@ const Display = () => {
               maxWidth: "100%",
               maxHeight: "100%",
             }}
-            src={"https://pym.jchun.me/api/image/" + id}
+            src={"https://pym.jchun.me/api/" + id}
             alt={"Not loading properly!"}
           />
         </Container>

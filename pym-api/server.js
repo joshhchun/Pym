@@ -21,8 +21,8 @@ const mongoose = require("mongoose");
 // Init MongoDB
 require("./initDB")();
 
-app.use('/api', displayRouter);
-app.use('/api/image', imageRouter);
+app.use('/api/display', displayRouter);
+app.use('/api', imageRouter);
 app.use('/api/save', saveRouter);
 // app.use('/new', uploadRouter);
 
