@@ -5,5 +5,6 @@ COPY package*.json /usr/src/app/
 
 RUN npm ci
 COPY . .
+RUN npx tsc
 
 CMD ["npm", "start"]

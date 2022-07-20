@@ -1,6 +1,6 @@
-const express = require("express");
+import express from "express";
 const router = express.Router({ mergeParams: true });
-const Post = require("../models/Post");
+import { Post } from "../models/Post";
 
 // Function to update the expiration time
 function updateExpire() {
@@ -12,15 +12,18 @@ function updateExpire() {
 router.get("/:id", async (req, res) => {
   try {
     const post = await Post.findOne({ shortId: req.params.id });
-    res
-      .status(200)
-      .json({ value: post.value, group: post.group, language: post.language });
-    post.expireAt = updateExpire();
-    await post.save();
+    if (post) {
+      res
+        .status(200)
+        .json({ value: post.value, group: post.group, language: post.language });
+      post.expireAt = updateExpire();
+      await post.save();
+    }
   } catch (e) {
     console.log("No Post with that ID!");
     res.json(null)
   }
 });
 
-module.exports = router;
+export { router as displayRouter }
+

@@ -1,11 +1,20 @@
-const express = require("express");
-const router = express.Router();
-const Post = require("../models/Post");
-const multer = require("multer");
-const crypto = require("crypto");
-const fs = require("fs");
+import multer from "multer";
+import fs from "fs";
+import * as crypto from "crypto";
+import express, { Request, Response } from "express";
+import { Post } from "../models/Post";
 
+const router = express.Router();
+
+interface Body {
+  group: string;
+  value: string | null;
+  language: string | null;
+}
+
+type mimetype = "text/plain" | "text/x-c" | "text/x-python" | "text/x-python-script" | "text/javascript"
 const mimeTypes = ["image/jpeg", "image/png", "image/heic"];
+
 const textMimeTypes = {
   "text/plain": "plaintext",
   "text/x-c": "c",
@@ -16,17 +25,17 @@ const textMimeTypes = {
 
 /* Multer (file upload) configuration */
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (req: any, file: any, cb: (arg0: null, arg1: string) => void) => {
     cb(null, "uploads/");
   },
   // Custom file name
-  filename: (req, file, cb) => {
+  filename: (req: any, file: { originalname: string; }, cb: (arg0: null, arg1: string) => void) => {
     cb(null, Date.now() + "-" + file.originalname);
   },
 });
 
 // File filtering
-const fileFilter = (req, file, cb) => {
+const fileFilter = (req: any, file: { mimetype: string; }, cb: (arg0: null, arg1: boolean) => void) => {
   // If the submitted file mime type is accepted
   console.log(file.mimetype)
   if (mimeTypes.includes(file.mimetype) || file.mimetype in textMimeTypes) {
@@ -47,7 +56,7 @@ const upload = multer({
 
 
 // Function to find the SHA256 hash of the file
-const hashFile = (content) => {
+const hashFile = (content: any) => {
   const hashSum = crypto.createHash("sha256");
   hashSum.update(content);
   return hashSum.digest("hex");
@@ -61,7 +70,7 @@ function updateExpire() {
 }
 
 // Function to check if the hex digest of newly uploaded file is already in the database
-async function checkHash(hexDigest, file) {
+async function checkHash(hexDigest: any, file: any) {
   try {
     const post = await Post.findOne({ hash: hexDigest });
     if (post) {
@@ -81,30 +90,30 @@ async function checkHash(hexDigest, file) {
 }
 
 // Function to handle if the user uploads a file
-async function handleFile(hexDigest, file, response) {
+async function handleFile(hexDigest: any, file: any, response: Response) {
   // If the file is a text (or code file) then treat it as a text post
   let fileBuffer = ""
   if (file.mimetype in textMimeTypes) {
-    fileBuffer = fs.readFileSync("/usr/src/app/" + file.path).toString();
+    fileBuffer = fs.readFileSync(process.env.URL + file.path).toString();
   }
   Post.create({
     expireAt: updateExpire(),
     group: fileBuffer ? "text" : "image",
     value: fileBuffer ? fileBuffer : file.path,
     hash: hexDigest,
-    language: textMimeTypes[file.mimetype],
+    language: textMimeTypes[file.mimetype as mimetype],
   })
-    .then((res) => {
+    .then((res: { shortId: any; }) => {
       console.log(res);
       return response.status(200).json({ shortId: res.shortId });
     })
-    .catch((e) => {
+    .catch((e: string) => {
       console.log("error: " + e);
     });
 }
 
 // Function to handle if user pastes text
-async function handleText(hexDigest, body, response) {
+async function handleText(hexDigest: string, body: { group: any; value: any; language: any; }, response: Response) {
   Post.create({
     expireAt: updateExpire(),
     group: body.group,
@@ -112,17 +121,17 @@ async function handleText(hexDigest, body, response) {
     hash: hexDigest,
     language: body.language,
   })
-    .then((res) => {
+    .then((res: { shortId: string; }) => {
       return response.status(200).json({ shortId: res.shortId });
     })
-    .catch((e) => {
+    .catch((e: string) => {
       console.log("error: " + e);
     });
 }
 // API Endpoint for uploading an image
-router.post("/", upload.single("files"), async (req, response) => {
+router.post("/", upload.single("files"), async (req: Request, response: Response) => {
   // Hashing the file to see if post already exists in the database
-  const fileBuffer = req.file ? fs.readFileSync("/usr/src/app/" + req.file.path) : req.body.value;
+  const fileBuffer = req.file ? fs.readFileSync(process.env.URL + req.file.path) : req.body.value;
   if (!fileBuffer) return response.status(400);
   const hexDigest = hashFile(fileBuffer);
   const shortId = await checkHash(hexDigest, req.file);
@@ -135,4 +144,4 @@ router.post("/", upload.single("files"), async (req, response) => {
   }
 });
 
-module.exports = router;
+export { router as saveRouter }

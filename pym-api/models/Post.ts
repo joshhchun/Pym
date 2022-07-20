@@ -1,5 +1,14 @@
-const mongoose = require("mongoose");
-const nanoid = require("nanoid");
+import mongoose, { Schema, Document } from "mongoose";
+import { nanoid } from "nanoid";
+
+export interface IPost extends Document {
+  shortId: string;
+  group: string;
+  value: string;
+  hash: string;
+  language: string | null;
+  expireAt: Date;
+}
 
 const postScheme = new mongoose.Schema({
     shortId: {
@@ -25,10 +34,12 @@ const postScheme = new mongoose.Schema({
         required: false
     },
     expireAt: {
-        type: Date
+        type: Date,
+        required: true
     }
 });
 
 postScheme.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-module.exports = mongoose.model("Post", postScheme);
+const Post = mongoose.model<IPost>("Post", postScheme);
+export { Post }

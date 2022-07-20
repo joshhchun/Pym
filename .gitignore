@@ -2,6 +2,9 @@
 # Docker
 .dockerignore
 
+# Typescript -> Javascript
+*/dist/
+
 # dependencies
 */node_modules/*
 /.pnp
