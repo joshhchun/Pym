@@ -1,6 +1,6 @@
 ## Tech Stack:
 
-_MERN (MongoDB, Express.JS, React.JS, Node.JS), Docker, Nginx, & Caddy_
+_MERN + Typescript (MongoDB, Express.JS, React.JS, Node.JS), Docker, Nginx, & Caddy_
 
 # What is it?
 
