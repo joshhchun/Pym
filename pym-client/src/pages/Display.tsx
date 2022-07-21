@@ -27,23 +27,16 @@ const Display = () => {
                 const response = await fetch(`https://pym.jchun.me/api/display/${id}`);
                 const data: Model = await response.json();
                 console.log(data);
-                // If there is no data response then there is no post with the inputed ID
-                if (!data) {
+                if (data.group === "link") {
+                    if (data.value.startsWith("https://")) window.location.href = data.value;
+                    else window.location.href = "https://" + data.value;
+                    return;
+                } else if (data.group === "image") {
+                    setIsImage(true);
+                } else if (data.group === "text") {
                     setIsImage(false);
-                    setLanguage("plaintext");
-                    setText("No post with that ID! Sorry :P");
-                } else {
-                    if (data.group === "link") {
-                      if (data.value.startsWith("https://")) window.location.href = data.value;
-                      else window.location.href = "https://" + data.value;
-                      return;
-                    } else if (data.group === "image") {
-                        setIsImage(true);
-                    } else if (data.group === "text") {
-                        setIsImage(false);
-                        setLanguage(data.language);
-                        setText(data.value);
-                    }
+                    setLanguage(data.language);
+                    setText(data.value);
                 }
             } catch (e: any) {
                 console.log(e.message);
