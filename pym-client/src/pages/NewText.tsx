@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { languages } from "../languages";
+import { languages } from "../utils/languages";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import NavBar from "../components/NavBar";
 import {
