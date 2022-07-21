@@ -18,6 +18,8 @@ router.get("/:id", async (req, res) => {
         .json({ value: post.value, group: post.group, language: post.language });
       post.expireAt = updateExpire();
       await post.save();
+    } else {
+      return res.json({ value: "Sorry, no post with that ID! :P", group: "text", "language": "plaintext" })
     }
   } catch (e) {
     console.log("No Post with that ID!");

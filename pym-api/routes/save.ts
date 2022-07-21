@@ -47,7 +47,7 @@ const fileFilter = (req: any, file: { mimetype: string; }, cb: (arg0: null, arg1
 const upload = multer({
   storage: storage,
   limits: {
-    // 5 mb
+    // 20 mb
     fileSize: 20971520,
   },
   fileFilter: fileFilter,
@@ -90,7 +90,7 @@ async function checkHash(hexDigest: any, file: any) {
 }
 
 // Function to handle if the user uploads a file
-async function handleFile(hexDigest: any, file: any, response: Response) {
+async function handleFile(hexDigest: string, file: any, response: Response) {
   // If the file is a text (or code file) then treat it as a text post
   let fileBuffer = ""
   if (file.mimetype in textMimeTypes) {
@@ -103,7 +103,7 @@ async function handleFile(hexDigest: any, file: any, response: Response) {
     hash: hexDigest,
     language: textMimeTypes[file.mimetype as mimetype],
   })
-    .then((res: { shortId: any; }) => {
+    .then((res: { shortId: string; }) => {
       console.log(res);
       return response.status(200).json({ shortId: res.shortId });
     })

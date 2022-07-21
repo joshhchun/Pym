@@ -1,6 +1,6 @@
 import TextField from "@mui/material/TextField";
 import { useState } from "react";
-import NavBar from "./NavBar";
+import NavBar from "../components/NavBar";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { InputLabel } from "@mui/material";
 import { FormControl } from "@mui/material";

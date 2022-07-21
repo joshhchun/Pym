@@ -1,6 +1,7 @@
 import SyntaxHighlighter from "react-syntax-highlighter";
 import NavBar from "../components/NavBar";
 import { ocean } from "react-syntax-highlighter/dist/cjs/styles/hljs";
+import "../App.css";
 
 export default function Home() {
     const message = `# Welcome to Pym!

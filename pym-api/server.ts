@@ -14,7 +14,7 @@ import { displayRouter } from "./routes/display";
 import { imageRouter } from "./routes/image";
 
 // Init MongoDB
-require("./initDB")();
+require("./utils/initDB")();
 
 app.use('/api/display', displayRouter);
 app.use('/api', imageRouter);
