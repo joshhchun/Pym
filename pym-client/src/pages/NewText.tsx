@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { languages } from "../languages";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import NavBar from "./NavBar";
+import NavBar from "../components/NavBar";
 import {
     TextField,
     InputLabel,

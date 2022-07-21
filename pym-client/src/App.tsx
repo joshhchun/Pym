@@ -1,10 +1,10 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./components/Home";
-import NewFile from "./components/NewFile";
-import Display from "./components/Display";
-import NewText from "./components/NewText";
-import URL from "./components/URL";
+import Home from "./pages/Home";
+import NewFile from "./pages/NewFile";
+import Display from "./pages/Display";
+import NewText from "./pages/NewText";
+import URL from "./pages/URL";
 
 function App() {
   return (
