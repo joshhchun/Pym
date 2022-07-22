@@ -25,19 +25,19 @@
 }
 
 @media only screen and (max-width: 1200px) {
-  .text > .syntax-highlighter {
+  syntax-highlighter {
     font-size: 95%;
   }
 }
 
 @media only screen and (max-width: 900px) {
-  .text > .syntax-highlighter {
+  syntax-highlighter {
     font-size: 90%;
   }
 }
 
 @media only screen and (max-width: 600px) {
-  .text > .syntax-highlighter {
+  syntax-highlighter {
     font-size: 75%;
   }
 }
