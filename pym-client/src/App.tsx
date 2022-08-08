@@ -6,6 +6,7 @@ import Display from "./pages/Display";
 import NewText from "./pages/NewText";
 import URL from "./pages/URL";
 import ReactGA from "react-ga";
+import Error from "./pages/Error";
 
 const TRACKING_ID = "G-B805EY85RN";
 ReactGA.initialize(TRACKING_ID);
