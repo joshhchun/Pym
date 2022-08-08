@@ -20,6 +20,7 @@ function App() {
                     <Route path="/newfile" element={<NewFile />} />
                     <Route path="/url" element={<URL />} />
                     <Route path="/:id" element={<Display />} />
+                    <Route path="*" element={<Error />} />
                 </Routes>
             </Router>
         </div>
