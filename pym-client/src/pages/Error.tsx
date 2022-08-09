@@ -12,7 +12,7 @@ const Error = () => {
                 showLineNumbers={true}
                 showInlineLineNumbers={true}
             >
-                "Sorry, no post with that ID! :P"
+                Sorry, no post with that ID! :P
             </SyntaxHighlighter>
         </div>
     );

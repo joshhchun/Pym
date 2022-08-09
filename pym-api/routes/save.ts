@@ -122,6 +122,7 @@ async function handleText(hexDigest: string, body: { group: any; value: any; lan
     language: body.language,
   })
     .then((res: { shortId: string; }) => {
+      console.log(res);
       return response.status(200).json({ shortId: res.shortId });
     })
     .catch((e: string) => {
@@ -137,6 +138,7 @@ router.post("/", upload.single("files"), async (req: Request, response: Response
   const shortId = await checkHash(hexDigest, req.file);
   // If the shortId exists for the hash contents of the file then return it
   if (shortId) {
+    console.log("shortId: " + shortId);
     return response.status(200).json({ shortId: shortId })
   } else {
     if (req.file) await handleFile(hexDigest, req.file, response);
