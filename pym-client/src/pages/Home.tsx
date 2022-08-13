@@ -6,6 +6,7 @@ import "../App.css";
 export default function Home() {
     const message = `# Welcome to Pym!
 # Pym is a syntax-higlighted text/image pastebin and URL shortener that allows you to share your code quickly.
+# Interact with the "New" button on the top right to create a new post, and you will be redirected to your unique short URL
 
 def permutations(length, alphabet=ALPHABET):
     ''' Recursively yield all permutations of alphabet up to given length. '''
@@ -21,7 +22,8 @@ def permutations(length, alphabet=ALPHABET):
                 yield letter + ele
 
 
-# Interact with the "New" button on the top right to create a new post, and you will be redirected to your unique short URL`;
+# Created by Josh Chun with Typescript, Express, React, Node, MongoDB, Docker, Nginx, & Caddy
+# Source code @ github.com/joshhchun/Pym`;
 
     return (
         <div className="text">

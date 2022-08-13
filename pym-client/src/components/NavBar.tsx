@@ -21,9 +21,9 @@ interface Data {
 }
 
 interface Props {
-  canSave: boolean;
-  value: string | null;
-  language: string | null;
+    canSave: boolean;
+    value: string | null;
+    language: string | null;
 }
 
 export default function NavBar(props: Props) {
