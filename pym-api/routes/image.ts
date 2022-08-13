@@ -10,12 +10,13 @@ var options = {
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const post = await Post.findOne({ shortId: req.params.id });
+    console.log(post);
     if (post) {
       if (post.group === "image" && !post.value.includes(process.env.FORBIDDEN!)) {
         res.sendFile(process.env.URL + post.value, options, function (err: any) {
           if (err) {
             console.log(err);
-            res.send(null);
+            return res.send(null);
           }
         });
       } else {
@@ -26,7 +27,7 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
   } catch (e: any) {
     console.log("No Post with that ID!" + e);
-    res.send(null);
+    return res.send(null);
   }
 });
 
