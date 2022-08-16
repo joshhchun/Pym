@@ -12,21 +12,24 @@ router.get("/:id", async (req: Request, res: Response) => {
     const post = await Post.findOne({ shortId: req.params.id });
     console.log(post);
     if (post) {
-      if (post.group === "image" && !post.value.includes(process.env.FORBIDDEN: string)) {
-        res.sendFile(process.env.URL + post.value, options, function (err: any) {
-          if (err) {
-            console.log(err);
-            return res.send(null);
-          }
-        });
+      if (post.group === "image") {
+        if (!post.value.includes(process.env.FORBIDDEN: string)) {
+          res.sendFile(process.env.URL + post.value, options, function (err: any) {
+            if (err) {
+              console.log(err);
+              return res.send(null);
+            }
+          });
+        } else {
+          return res.send("tsk tsk tsk tsk");
+        }
       } else {
-        return res.send("tsk tsk tsk tsk");
+        return res.send("Only raw images are allowed :-)");
       }
   } else {
     return res.send("No post with that ID!");
-  }
-  } catch (e: any) {
-    console.log("No Post with that ID!" + e);
+  }} catch (e: any) {
+    console.log("error " + e);
     return res.send(null);
   }
 });
