@@ -25,7 +25,7 @@ router.get("/:id", async (req: Request, res: Response) => {
             }
           );
         } else {
-          return res.send("Only raw images are allowed :-)");
+          return res.send(post.value);
         }
       } else {
         return res.send("tsk tsk tsk, IP Grabbed :-)");
