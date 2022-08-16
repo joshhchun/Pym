@@ -12,7 +12,12 @@ interface Body {
   language: string | null;
 }
 
-type mimetype = "text/plain" | "text/x-c" | "text/x-python" | "text/x-python-script" | "text/javascript"
+type mimetype =
+  | "text/plain"
+  | "text/x-c"
+  | "text/x-python"
+  | "text/x-python-script"
+  | "text/javascript";
 const mimeTypes = ["image/jpeg", "image/png", "image/heic"];
 
 const textMimeTypes = {
@@ -21,23 +26,35 @@ const textMimeTypes = {
   "text/x-python": "python",
   "text/x-python-script": "python",
   "text/javascript": "javascript",
-}
+};
 
 /* Multer (file upload) configuration */
 const storage = multer.diskStorage({
-  destination: (req: any, file: any, cb: (arg0: null, arg1: string) => void) => {
+  destination: (
+    req: any,
+    file: any,
+    cb: (arg0: null, arg1: string) => void
+  ) => {
     cb(null, "uploads/");
   },
   // Custom file name
-  filename: (req: any, file: { originalname: string; }, cb: (arg0: null, arg1: string) => void) => {
+  filename: (
+    req: any,
+    file: { originalname: string },
+    cb: (arg0: null, arg1: string) => void
+  ) => {
     cb(null, Date.now() + "-" + file.originalname);
   },
 });
 
 // File filtering
-const fileFilter = (req: any, file: { mimetype: string; }, cb: (arg0: null, arg1: boolean) => void) => {
+const fileFilter = (
+  req: any,
+  file: { mimetype: string },
+  cb: (arg0: null, arg1: boolean) => void
+) => {
   // If the submitted file mime type is accepted
-  console.log(file.mimetype)
+  console.log(file.mimetype);
   if (mimeTypes.includes(file.mimetype) || file.mimetype in textMimeTypes) {
     cb(null, true);
   } else {
@@ -53,7 +70,6 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 /**************************************/
-
 
 // Function to find the SHA256 hash of the file
 const hashFile = (content: any) => {
@@ -76,9 +92,9 @@ async function checkHash(hexDigest: any, file: any) {
     if (post) {
       // If the hash already exists then delete the newly uploaded file
       if (file) {
-        fs.unlink("/usr/src/app/" + file.path, (err) => {
+        fs.unlink(process.env.URL + file.path, (err) => {
           if (err) console.log(err);
-        })
+        });
       }
       return post.shortId;
     }
@@ -86,13 +102,14 @@ async function checkHash(hexDigest: any, file: any) {
     return null;
   } catch (e) {
     console.log(e);
+    return null;
   }
 }
 
 // Function to handle if the user uploads a file
 async function handleFile(hexDigest: string, file: any, response: Response) {
   // If the file is a text (or code file) then treat it as a text post
-  let fileBuffer = ""
+  let fileBuffer = "";
   if (file.mimetype in textMimeTypes) {
     fileBuffer = fs.readFileSync(process.env.URL + file.path).toString();
   }
@@ -103,7 +120,7 @@ async function handleFile(hexDigest: string, file: any, response: Response) {
     hash: hexDigest,
     language: textMimeTypes[file.mimetype as mimetype],
   })
-    .then((res: { shortId: string; }) => {
+    .then((res: { shortId: string }) => {
       console.log(res);
       return response.status(200).json({ shortId: res.shortId });
     })
@@ -113,7 +130,11 @@ async function handleFile(hexDigest: string, file: any, response: Response) {
 }
 
 // Function to handle if user pastes text
-async function handleText(hexDigest: string, body: { group: any; value: any; language: any; }, response: Response) {
+async function handleText(
+  hexDigest: string,
+  body: { group: any; value: any; language: any },
+  response: Response
+) {
   Post.create({
     expireAt: updateExpire(),
     group: body.group,
@@ -121,7 +142,7 @@ async function handleText(hexDigest: string, body: { group: any; value: any; lan
     hash: hexDigest,
     language: body.language,
   })
-    .then((res: { shortId: string; }) => {
+    .then((res: { shortId: string }) => {
       console.log(res);
       return response.status(200).json({ shortId: res.shortId });
     })
@@ -130,20 +151,27 @@ async function handleText(hexDigest: string, body: { group: any; value: any; lan
     });
 }
 // API Endpoint for uploading an image
-router.post("/", upload.single("files"), async (req: Request, response: Response) => {
-  // Hashing the file to see if post already exists in the database
-  const fileBuffer = req.file ? fs.readFileSync(process.env.URL + req.file.path) : req.body.value;
-  if (!fileBuffer) return response.status(400);
-  const hexDigest = hashFile(fileBuffer);
-  const shortId = await checkHash(hexDigest, req.file);
-  // If the shortId exists for the hash contents of the file then return it
-  if (shortId) {
-    console.log("shortId: " + shortId);
-    return response.status(200).json({ shortId: shortId })
-  } else {
-    if (req.file) await handleFile(hexDigest, req.file, response);
-    else await handleText(hexDigest, req.body, response);
+router.post(
+  "/",
+  upload.single("files"),
+  async (req: Request, response: Response) => {
+    // Hashing the file to see if post already exists in the database
+    const fileBuffer = req.file
+      ? fs.readFileSync(process.env.URL + req.file.path)
+      : req.body.value;
+    if (!fileBuffer) return response.status(400);
+    const hexDigest = hashFile(fileBuffer);
+    const shortId = await checkHash(hexDigest, req.file);
+    // If the shortId exists for the hash contents of the file then return it
+    if (shortId) {
+      console.log("shortId: " + shortId);
+      return response.status(200).json({ shortId: shortId });
+    } else {
+      if (req.file) await handleFile(hexDigest, req.file, response);
+      else await handleText(hexDigest, req.body, response);
+    }
   }
-});
+);
 
-export { router as saveRouter }
+
+export { router as saveRouter };

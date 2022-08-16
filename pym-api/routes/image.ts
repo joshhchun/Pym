@@ -12,7 +12,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     const post = await Post.findOne({ shortId: req.params.id });
     console.log(post);
     if (post) {
-      if (post.group === "image" && !post.value.includes(process.env.FORBIDDEN!)) {
+      if (post.group === "image" && !post.value.includes(process.env.FORBIDDEN: string)) {
         res.sendFile(process.env.URL + post.value, options, function (err: any) {
           if (err) {
             console.log(err);
