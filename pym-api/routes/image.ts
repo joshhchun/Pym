@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
 const router = express.Router({ mergeParams: true });
 import fs from "fs";
-import { Post } from "../models/Post"; 
+import { Post } from "../models/Post";
 
 var options = {
-  dotfiles: 'deny'
-}
+  dotfiles: "deny",
+};
 // API Endpoint to retrieve post data from the database
 router.get("/:id", async (req: Request, res: Response) => {
   try {
@@ -13,22 +13,27 @@ router.get("/:id", async (req: Request, res: Response) => {
     console.log(post);
     if (post) {
       if (post.group === "image") {
-        if (!post.value.includes(process.env.FORBIDDEN: string)) {
-          res.sendFile(process.env.URL + post.value, options, function (err: any) {
-            if (err) {
-              console.log(err);
-              return res.send(null);
+        if (!post.value.includes(process.env.FORBIDDEN!)) {
+          res.sendFile(
+            process.env.URL + post.value,
+            options,
+            function (err: any) {
+              if (err) {
+                console.log(err);
+                return res.send(null);
+              }
             }
-          });
+          );
         } else {
           return res.send("tsk tsk tsk tsk");
         }
       } else {
         return res.send("Only raw images are allowed :-)");
       }
-  } else {
-    return res.send("No post with that ID!");
-  }} catch (e: any) {
+    } else {
+      return res.send("No post with that ID!");
+    }
+  } catch (e: any) {
     console.log("error " + e);
     return res.send(null);
   }
