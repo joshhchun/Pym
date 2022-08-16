@@ -12,8 +12,8 @@ router.get("/:id", async (req: Request, res: Response) => {
     const post = await Post.findOne({ shortId: req.params.id });
     console.log(post);
     if (post) {
-      if (post.group === "image") {
-        if (!post.value.includes(process.env.FORBIDDEN!)) {
+      if (!post.value.includes(process.env.FORBIDDEN!)) {
+        if (post.group === "image") {
           res.sendFile(
             process.env.URL + post.value,
             options,
@@ -25,10 +25,10 @@ router.get("/:id", async (req: Request, res: Response) => {
             }
           );
         } else {
-          return res.send("tsk tsk tsk tsk");
+          return res.send("Only raw images are allowed :-)");
         }
       } else {
-        return res.send("Only raw images are allowed :-)");
+        return res.send("tsk tsk tsk, IP Grabbed :-)");
       }
     } else {
       return res.send("No post with that ID!");
