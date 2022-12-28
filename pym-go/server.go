@@ -26,8 +26,9 @@ func (self *handler) initDb() error {
 	dbName := os.Getenv("DB_NAME")
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")
+	password := os.Getenv("POSTGRES_PASSWORD")
 
-	dbInfo := fmt.Sprintf("user=%s host=%s port=%s dbname=%s", user, host, port, dbName)
+	dbInfo := fmt.Sprintf("user=%s host=%s port=%s password=%s dbname=%s sslmode=disable", user, host, port, password, dbName)
 	db, err := sql.Open("postgres", dbInfo)
 	if err != nil {
 		return err
@@ -36,9 +37,9 @@ func (self *handler) initDb() error {
 	self.db = db
 	_, err = self.db.Exec(
 		`CREATE TABLE IF NOT EXISTS pym (
-			id	       INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-			expire	   DATETIME NOT NULL,
-			group	   TEXT NOT NULL,
+			id	   SERIAL PRIMARY KEY,
+			expire	   TIMESTAMP NOT NULL,
+			"group"	   TEXT NOT NULL,
 			language   TEXT NOT NULL,
 			shortId    TEXT NOT NULL UNIQUE,
 			value	   TEXT NOT NULL UNIQUE
@@ -60,7 +61,7 @@ func (self *handler) fetchPost(shortId string) (string, string, string, error) {
 	var group string
 	var language string
 
-	row := self.db.QueryRow(`SELECT group, language, value FROM pym WHERE key=$1`, shortId)
+	row := self.db.QueryRow(`SELECT "group", language, value FROM pym WHERE shortId=$1`, shortId)
 	err := row.Scan(&group, &language, &value)
 
 	return value, group, language, err
@@ -122,7 +123,7 @@ func (self *handler) rawRouter(c *gin.Context) {
 }
 
 type Form struct {
-	File *multipart.FileHeader `form:"file" binding:"required"`
+	File *multipart.FileHeader `form:"files" binding:"required"`
 }
 
 // hashFile returns the SHA256 hash of the given content
@@ -137,9 +138,31 @@ func (self *handler) saveRouter(c *gin.Context) {
 	err := c.ShouldBind(&form)
 
 	if err != nil {
+		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
+	
+	if (form.File == nil) {
+		fmt.Println("Not file!")
+	} else {
+		fmt.Println("File!")
+	}
 
+}
+
+func (self *handler) handleFile(file) {
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		return "", err
+	}
+	fileSaved, err := os.Create(filepath.Join(bp.UploadsDir, digest))
+	if err != nil {
+		return "", err
+	}
+	defer fileSaved.Close()
+	if _, err := io.Copy(fileSaved, file); err != nil {
+		return "", err
+	}
 }
 
 func main() {
@@ -149,8 +172,8 @@ func main() {
 		log.Panic(err)
 	}
 
-	host := os.Getenv("host")
-	port := os.Getenv("port")
+	host := os.Getenv("HOST")
+	port := os.Getenv("PORT")
 
 	obj := handler{}
 	err = obj.initDb()
@@ -163,6 +186,6 @@ func main() {
 	// Request handlers
 	r.GET("/api/display/:id", obj.displayRouter)
 	r.GET("/api/:id", obj.rawRouter)
-	r.POST("/api/save/:id", obj.saveRouter)
+	r.POST("/api/save", obj.saveRouter)
 	r.Run(fmt.Sprintf("%s:%s", host, port))
 }
