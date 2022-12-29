@@ -104,7 +104,7 @@ func (self *handler) displayRouter(c *gin.Context) {
 
 func (self *handler) rawRouter(c *gin.Context) {
 	shortId := c.Param("id")
-	hash, group, _, err := self.fetchPost(shortId)
+	_, group, _, err := self.fetchPost(shortId)
 
 	// Check for errors
 	if err != nil {
