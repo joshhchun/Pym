@@ -1,9 +1,13 @@
 package main
 
 import (
-	"crypto"
+	"crypto/rand"
+	"crypto/sha1"
 	"database/sql"
+	"encoding/base64"
+	"encoding/hex"
 	"fmt"
+	"io"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -17,7 +21,9 @@ import (
 )
 
 type handler struct {
-	db *sql.DB
+	db          *sql.DB
+	maxFileSize int64
+	maxTries    int64
 }
 
 func (self *handler) initDb() error {
@@ -40,9 +46,9 @@ func (self *handler) initDb() error {
 			id	   SERIAL PRIMARY KEY,
 			expire	   TIMESTAMP NOT NULL,
 			"group"	   TEXT NOT NULL,
-			language   TEXT NOT NULL,
+			language   TEXT,
 			shortId    TEXT NOT NULL UNIQUE,
-			value	   TEXT NOT NULL UNIQUE
+			hash	   TEXT NOT NULL UNIQUE
 		)`)
 	if err != nil {
 		return err
@@ -57,19 +63,19 @@ func (self *handler) updateExpire(shortId string) error {
 }
 
 func (self *handler) fetchPost(shortId string) (string, string, string, error) {
-	var value string
+	var hash string
 	var group string
 	var language string
 
-	row := self.db.QueryRow(`SELECT "group", language, value FROM pym WHERE shortId=$1`, shortId)
-	err := row.Scan(&group, &language, &value)
+	row := self.db.QueryRow(`SELECT "group", language, hash FROM pym WHERE shortId=$1`, shortId)
+	err := row.Scan(&group, &language, &hash)
 
-	return value, group, language, err
+	return hash, group, language, err
 }
 
 func (self *handler) displayRouter(c *gin.Context) {
 	shortId := c.Param("id")
-	value, group, language, err := self.fetchPost(shortId)
+	hash, group, language, err := self.fetchPost(shortId)
 
 	// Check for errors
 	if err == sql.ErrNoRows {
@@ -77,6 +83,13 @@ func (self *handler) displayRouter(c *gin.Context) {
 	} else if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+
+	value, err := os.ReadFile(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": err})
+		return
 	}
 
 	c.JSON(200, gin.H{"value": value, "group": group, "language": language})
@@ -91,23 +104,27 @@ func (self *handler) displayRouter(c *gin.Context) {
 
 func (self *handler) rawRouter(c *gin.Context) {
 	shortId := c.Param("id")
-	value, group, _, err := self.fetchPost(shortId)
+	hash, group, _, err := self.fetchPost(shortId)
 
 	// Check for errors
-	if err == sql.ErrNoRows {
-		c.AbortWithStatus(http.StatusNotFound)
-	} else if err != nil {
-		log.Println(err)
-		c.AbortWithStatus(http.StatusInternalServerError)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.AbortWithStatus(http.StatusNotFound)
+		} else {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+		}
+		return
 	}
 
+	/** TODO: maybe change all of these into c.File? **/
 	switch group {
 	case "image":
 		c.File(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
 	case "text":
-		c.String(200, value)
+		c.String(200, hash)
 	case "link":
-		c.Redirect(200, value)
+		c.Redirect(200, hash)
 	default:
 		log.Printf("Unexpected group: %s\n", group)
 		c.AbortWithStatus(http.StatusMethodNotAllowed)
@@ -126,11 +143,54 @@ type Form struct {
 	File *multipart.FileHeader `form:"files" binding:"required"`
 }
 
-// hashFile returns the SHA256 hash of the given content
-func hashFile(content []byte) string {
-	hashSum := crypto.SHA256.New()
-	hashSum.Write(content)
-	return fmt.Sprintf("%x", hashSum.Sum(nil))
+// hashFile returns the SHA1 hash of the given content
+func hashFile(file multipart.File) (string, error) {
+	hashSum := sha1.New()
+	if _, err := io.Copy(hashSum, file); err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	return fmt.Sprintf("%x", hashSum.Sum(nil)), nil
+}
+
+func hashText(buffer string) string {
+	return fmt.Sprintf("%x", sha1.Sum([]byte(buffer)))
+}
+
+func (self *handler) generateShortID() (string, error) {
+	var count int
+	var shortId string
+	b := make([]byte, 2)
+	for i := int64(0); i <= self.maxTries; i += 1 {
+		_, err := rand.Read(b)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		shortId = hex.EncodeToString(b)[:4]
+		row := self.db.QueryRow(`SELECT COUNT(shortId) FROM pym WHERE shortId=$1`, shortId)
+		err = row.Scan(&count)
+		if err != nil {
+			log.Println(err)
+		}
+		if count == 0 {
+			break
+		}
+	}
+
+	// If we are out of the loop and the count is not 0, then we could not make new entry
+	if count != 0 {
+		return "", fmt.Errorf("Could not make new entry in database.")
+	}
+
+	return shortId, nil
+}
+
+type Body struct {
+	group    string `json:"group"`
+	language string `json:"language,omitempty"`
+	value    string `json:"hash,omitempty"`
 }
 
 func (self *handler) saveRouter(c *gin.Context) {
@@ -140,29 +200,137 @@ func (self *handler) saveRouter(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
+		return
 	}
-	
-	if (form.File == nil) {
-		fmt.Println("Not file!")
+
+	// User is trying to post a paste || url
+	if form.File == nil {
+		var requestBody Body
+		if err := c.BindJSON(&requestBody); err != nil {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		shortId, err := self.handleText(requestBody)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusBadRequest)
+		}
+		c.JSON(200, gin.H{"shortId": shortId})
 	} else {
-		fmt.Println("File!")
+		if form.File.Size > self.maxFileSize {
+			log.Printf("Requested upload file size: %d", form.File.Size)
+			c.AbortWithStatus(http.StatusRequestEntityTooLarge)
+			return
+		}
+		shortId, err := self.handleFile(form.File)
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		c.JSON(200, gin.H{"shortId": shortId})
 	}
 
 }
 
-func (self *handler) handleFile(file) {
-	_, err = file.Seek(0, io.SeekStart)
+func (self *handler) checkHash(hash string) (string, error) {
+	var shortId string
+	row := self.db.QueryRow(`SELECT shortId FROM pym WHERE hash=?`, hash)
+	err := row.Scan(&shortId)
+
+	switch err {
+	case nil:
+		return shortId, nil
+	case sql.ErrNoRows:
+		return "", nil
+	default:
+		return "", err
+	}
+}
+
+func (self *handler) handleText(body Body) (string, error) {
+	// Check if post already exists
+	hash := hashText(body.value)
+	shortId, err := self.checkHash(hash)
+	if err != nil {
+		log.Println(err)
+	}
+	if shortId != "" {
+		return shortId, nil
+	}
+
+	shortId, err = self.generateShortID()
 	if err != nil {
 		return "", err
 	}
-	fileSaved, err := os.Create(filepath.Join(bp.UploadsDir, digest))
+
+	fileCreated, err := os.Create(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
 	if err != nil {
 		return "", err
 	}
-	defer fileSaved.Close()
-	if _, err := io.Copy(fileSaved, file); err != nil {
+	defer fileCreated.Close()
+
+	// Write the body contents to the new file
+	_, err = fileCreated.WriteString(body.value)
+	if err != nil {
 		return "", err
 	}
+
+	// Save post in the database
+	_, err = self.db.Exec(`INSERT INTO pym (expire, "group", language, shortId, hash) VALUES ($1, $2, $3, $4, $5)`,
+		time.Now().Add(time.Hour), body.group, body.language, shortId, hash)
+	if err != nil {
+		return "", err
+	}
+
+	return shortId, nil
+}
+
+func (self *handler) handleFile(file *multipart.FileHeader) (string, error) {
+	// Open the file
+	openedFile, err := file.Open()
+	if err != nil {
+		return "", err
+	}
+	defer openedFile.Close()
+
+	// Get the hash of the file
+	hash, err := hashFile(openedFile)
+	row := self.db.QueryRow(`SELECT Count(hash) FROM pym WHERE hash=?`, hash)
+	err = row.Scan(&hash)
+
+	// Seek the file
+	_, err = openedFile.Seek(0, io.SeekStart)
+	if err != nil {
+		return "", err
+	}
+
+	shortId, err := self.generateShortID()
+	if err != nil {
+		return "", err
+	}
+
+	// Create the new file
+	fileCreated, err := os.Create(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
+	if err != nil {
+		return "", err
+	}
+	defer fileCreated.Close()
+
+	// Copy the file to the new file
+	_, err = io.Copy(fileCreated, openedFile)
+	if err != nil {
+		return "", err
+	}
+
+	// Save post in the database
+	_, err = self.db.Exec(`INSERT INTO pym (expire, "group", language, shortId, hash) VALUES ($1, $2, $3, $4, $5)`,
+		time.Now().Add(time.Hour), "image", nil, shortId, hash)
+	if err != nil {
+		return "", err
+	}
+
+	return shortId, nil
 }
 
 func main() {
@@ -175,7 +343,7 @@ func main() {
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
 
-	obj := handler{}
+	obj := handler{maxFileSize: (2 << 20) * 8, maxTries: 8}
 	err = obj.initDb()
 	if err != nil {
 		log.Panic(err)
