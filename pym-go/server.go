@@ -215,6 +215,7 @@ func (self *handler) saveRouter(c *gin.Context) {
 	// User is trying to post a paste || url
 	if form.File == nil {
 		log.Println("File is nil!")
+		log.Println("form.ReqBody.Group: ", form.ReqBody.Group)
 		// var requestBody Body
 		// if err := c.BindJSON(&requestBody); err != nil {
 		// 	log.Println("in hereee")
