@@ -85,6 +85,7 @@ func (self *handler) displayRouter(c *gin.Context) {
 	}
 
 	value, err := os.ReadFile(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
+	log.Printf("OK POST %s TEXT IS %s", shortId, value)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"Error": err})
