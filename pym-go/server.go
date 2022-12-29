@@ -181,7 +181,6 @@ func (self *handler) generateShortID() (string, error) {
 	if count != 0 {
 		return "", fmt.Errorf("Could not make new entry in database.")
 	}
-
 	return shortId, nil
 }
 
@@ -201,29 +200,15 @@ type Form struct {
 }
 
 func (self *handler) saveRouter(c *gin.Context) {
-	form := Form{}
-
-	// Bind the request to the Form
-	if err := c.ShouldBind(&form); err != nil {
-		log.Println("u done goofed up")
-		log.Println(err)
-		c.AbortWithStatus(http.StatusBadRequest)
-	}
-
-	log.Println("ok gets here?")
-
-	// User is trying to post a paste || url
-	if form.File == nil {
-		log.Println("File is nil!")
-		log.Println("form.ReqBody.Group: ", form.ReqBody.Group)
-		// var requestBody Body
-		// if err := c.BindJSON(&requestBody); err != nil {
-		// 	log.Println("in hereee")
-		// 	log.Println(err)
-		// 	c.AbortWithStatus(http.StatusBadRequest)
-		// 	return
-		// }
-		shortId, err := self.handleText(form.ReqBody)
+	if c.GetHeader("Content-Type") == "application/json" {
+		requestBody := Body{}
+		if err := c.BindJSON(&requestBody); err != nil {
+			log.Println("in hereee")
+			log.Println(err)
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		shortId, err := self.handleText(requestBody)
 		if err != nil {
 			log.Println("abort abort abort")
 			log.Println(err)
@@ -231,6 +216,16 @@ func (self *handler) saveRouter(c *gin.Context) {
 		}
 		c.JSON(200, gin.H{"shortId": shortId})
 	} else {
+		form := Form{}
+		// Bind the request to the Form
+		if err := c.ShouldBind(&form); err != nil {
+			log.Println("u done goofed up")
+			log.Println(err)
+			c.AbortWithStatus(http.StatusBadRequest)
+		}
+
+		log.Println("ok gets here?")
+
 		if form.File.Size > self.maxFileSize {
 			log.Printf("Requested upload file size: %d", form.File.Size)
 			c.AbortWithStatus(http.StatusRequestEntityTooLarge)
@@ -243,7 +238,6 @@ func (self *handler) saveRouter(c *gin.Context) {
 		}
 		c.JSON(200, gin.H{"shortId": shortId})
 	}
-
 }
 
 func (self *handler) checkHash(hash string) (string, error) {
