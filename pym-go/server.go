@@ -122,7 +122,8 @@ func (self *handler) rawRouter(c *gin.Context) {
 	case "image":
 		c.File(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
 	case "text":
-		c.String(200, hash)
+		c.File(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
+		// c.String(200, hash)
 	case "link":
 		c.Redirect(200, hash)
 	default:
