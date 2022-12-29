@@ -202,7 +202,8 @@ type Form struct {
 
 func (self *handler) saveRouter(c *gin.Context) {
 	form := Form{}
-	log.Println(io.ReadAll(c.Request.Body))
+	x, _ := io.ReadAll(c.Request.Body)
+	log.Println(string(x))
 
 	// Bind the request to the Form
 	if err := c.ShouldBind(&form); err != nil {
