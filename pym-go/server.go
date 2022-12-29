@@ -149,6 +149,9 @@ func hashFile(file multipart.File) (string, error) {
 }
 
 func hashText(buffer string) string {
+	log.Println("---------")
+	log.Printf("The value is: %s", buffer)
+	log.Printf("-------------")
 	return fmt.Sprintf("%x", sha1.Sum([]byte(buffer)))
 }
 
@@ -260,6 +263,7 @@ func (self *handler) checkHash(hash string) (string, error) {
 func (self *handler) handleText(body Body) (string, error) {
 	// Check if post already exists
 	hash := hashText(body.Value)
+	log.Printf("ok hash is: %s and the value is: %s", hash, body.Value)
 	shortId, err := self.checkHash(hash)
 	if err != nil {
 		log.Println(err)
