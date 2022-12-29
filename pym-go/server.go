@@ -191,46 +191,25 @@ type Body struct {
 	Value    string `json:"hash"`
 }
 
-// type Form struct {
-// 	File *multipart.FileHeader `form:"files"`
-// }
-
 type Form struct {
-	File    *multipart.FileHeader `form:"files"`
-	ReqBody Body                  `json:"body"`
+	File *multipart.FileHeader `form:"files"`
 }
 
+// type Form struct {
+// 	File    *multipart.FileHeader `form:"files"`
+// 	ReqBody Body                  `json:"body"`
+// }
+
 func (self *handler) saveRouter(c *gin.Context) {
-	var form Form
-
-	// Bind the request to the Form
-	if err := c.ShouldBind(&form); err != nil {
-		log.Println("u done goofed up")
-		log.Println(err)
-		c.AbortWithStatus(http.StatusBadRequest)
-	}
-
-	log.Println("ok gets here?")
-
-	// User is trying to post a paste || url
-	if form.File == nil {
-		log.Println("File is nil!")
-		log.Println("form.ReqBody.Group: ", form.ReqBody.Group)
-		// var requestBody Body
-		// if err := c.BindJSON(&requestBody); err != nil {
-		// 	log.Println("in hereee")
-		// 	log.Println(err)
-		// 	c.AbortWithStatus(http.StatusBadRequest)
-		// 	return
-		// }
-		shortId, err := self.handleText(form.ReqBody)
-		if err != nil {
-			log.Println("abort abort abort")
+	if c.GetHeader("Content-Type") == "multipart/form-data" {
+		var form Form
+		// Bind the request to the Form
+		if err := c.ShouldBind(&form); err != nil {
+			log.Println("u done goofed up")
 			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
 		}
-		c.JSON(200, gin.H{"shortId": shortId})
-	} else {
+		log.Println("ok gets here?")
 		if form.File.Size > self.maxFileSize {
 			log.Printf("Requested upload file size: %d", form.File.Size)
 			c.AbortWithStatus(http.StatusRequestEntityTooLarge)
@@ -240,6 +219,22 @@ func (self *handler) saveRouter(c *gin.Context) {
 		if err != nil {
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
+		}
+		c.JSON(200, gin.H{"shortId": shortId})
+
+	} else {
+		var requestBody Body
+		if err := c.BindJSON(&requestBody); err != nil {
+			log.Println("in hereee")
+			log.Println(err)
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		shortId, err := self.handleText(requestBody)
+		if err != nil {
+			log.Println("abort abort abort")
+			log.Println(err)
+			c.AbortWithStatus(http.StatusBadRequest)
 		}
 		c.JSON(200, gin.H{"shortId": shortId})
 	}
