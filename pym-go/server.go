@@ -123,9 +123,9 @@ func (self *handler) rawRouter(c *gin.Context) {
 		c.File(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
 	case "text":
 		c.File(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
-		// c.String(200, hash)
 	case "link":
-		c.Redirect(200, hash)
+		x, _ := os.ReadFile(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
+		c.Redirect(200, string(x))
 	default:
 		log.Printf("Unexpected group: %s\n", group)
 		c.AbortWithStatus(http.StatusMethodNotAllowed)
