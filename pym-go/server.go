@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"crypto/sha1"
 	"database/sql"
-	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"io"
@@ -75,7 +74,7 @@ func (self *handler) fetchPost(shortId string) (string, string, string, error) {
 
 func (self *handler) displayRouter(c *gin.Context) {
 	shortId := c.Param("id")
-	hash, group, language, err := self.fetchPost(shortId)
+	_, group, language, err := self.fetchPost(shortId)
 
 	// Check for errors
 	if err == sql.ErrNoRows {
@@ -139,9 +138,6 @@ func (self *handler) rawRouter(c *gin.Context) {
 
 }
 
-type Form struct {
-	File *multipart.FileHeader `form:"files" binding:"required"`
-}
 
 // hashFile returns the SHA1 hash of the given content
 func hashFile(file multipart.File) (string, error) {
@@ -189,30 +185,38 @@ func (self *handler) generateShortID() (string, error) {
 
 type Body struct {
 	group    string `json:"group"`
-	language string `json:"language,omitempty"`
-	value    string `json:"hash,omitempty"`
+	language string `json:"language"`
+	value    string `json:"hash"`
+}
+
+type Form struct {
+	File *multipart.FileHeader `form:"files"`
 }
 
 func (self *handler) saveRouter(c *gin.Context) {
 	var form Form
-	err := c.ShouldBind(&form)
-
+	file, _, err := c.Request.FormFile("files")
 	if err != nil {
+		log.Println("yur done buddy")
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+	log.Println("ok gets here?")
 
 	// User is trying to post a paste || url
-	if form.File == nil {
+	if file == nil {
 		var requestBody Body
 		if err := c.BindJSON(&requestBody); err != nil {
+			log.Println("in hereee")
 			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
+
 		shortId, err := self.handleText(requestBody)
 		if err != nil {
+			log.Println("abort abort abort")
 			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
 		}
@@ -235,7 +239,7 @@ func (self *handler) saveRouter(c *gin.Context) {
 
 func (self *handler) checkHash(hash string) (string, error) {
 	var shortId string
-	row := self.db.QueryRow(`SELECT shortId FROM pym WHERE hash=?`, hash)
+	row := self.db.QueryRow(`SELECT shortId FROM pym WHERE hash=$1`, hash)
 	err := row.Scan(&shortId)
 
 	switch err {
@@ -296,8 +300,13 @@ func (self *handler) handleFile(file *multipart.FileHeader) (string, error) {
 
 	// Get the hash of the file
 	hash, err := hashFile(openedFile)
-	row := self.db.QueryRow(`SELECT Count(hash) FROM pym WHERE hash=?`, hash)
-	err = row.Scan(&hash)
+	shortId, err := self.checkHash(hash)
+	if err != nil {
+		log.Println(err)
+	}
+	if shortId != "" {
+		return shortId, nil
+	}
 
 	// Seek the file
 	_, err = openedFile.Seek(0, io.SeekStart)
@@ -305,7 +314,7 @@ func (self *handler) handleFile(file *multipart.FileHeader) (string, error) {
 		return "", err
 	}
 
-	shortId, err := self.generateShortID()
+	shortId, err = self.generateShortID()
 	if err != nil {
 		return "", err
 	}
@@ -325,7 +334,7 @@ func (self *handler) handleFile(file *multipart.FileHeader) (string, error) {
 
 	// Save post in the database
 	_, err = self.db.Exec(`INSERT INTO pym (expire, "group", language, shortId, hash) VALUES ($1, $2, $3, $4, $5)`,
-		time.Now().Add(time.Hour), "image", nil, shortId, hash)
+		time.Now().Add(time.Hour), "image", "", shortId, hash)
 	if err != nil {
 		return "", err
 	}
