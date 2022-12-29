@@ -138,7 +138,6 @@ func (self *handler) rawRouter(c *gin.Context) {
 
 }
 
-
 // hashFile returns the SHA1 hash of the given content
 func hashFile(file multipart.File) (string, error) {
 	hashSum := sha1.New()
@@ -184,37 +183,43 @@ func (self *handler) generateShortID() (string, error) {
 }
 
 type Body struct {
-	group    string `json:"group"`
-	language string `json:"language"`
-	value    string `json:"hash"`
+	Group    string `json:"group"`
+	Language string `json:"language"`
+	Value    string `json:"hash"`
 }
 
+// type Form struct {
+// 	File *multipart.FileHeader `form:"files"`
+// }
+
 type Form struct {
-	File *multipart.FileHeader `form:"files"`
+	File    *multipart.FileHeader `form:"files"`
+	ReqBody Body                  `json:"body"`
 }
 
 func (self *handler) saveRouter(c *gin.Context) {
 	var form Form
-	file, _, err := c.Request.FormFile("files")
-	if err != nil {
-		log.Println("yur done buddy")
+
+	// Bind the request to the Form
+	if err := c.ShouldBind(&form); err != nil {
+		log.Println("u done goofed up")
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
-		return
 	}
+
 	log.Println("ok gets here?")
 
 	// User is trying to post a paste || url
-	if file == nil {
-		var requestBody Body
-		if err := c.BindJSON(&requestBody); err != nil {
-			log.Println("in hereee")
-			log.Println(err)
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-
-		shortId, err := self.handleText(requestBody)
+	if form.File == nil {
+		log.Println("File is nil!")
+		// var requestBody Body
+		// if err := c.BindJSON(&requestBody); err != nil {
+		// 	log.Println("in hereee")
+		// 	log.Println(err)
+		// 	c.AbortWithStatus(http.StatusBadRequest)
+		// 	return
+		// }
+		shortId, err := self.handleText(form.ReqBody)
 		if err != nil {
 			log.Println("abort abort abort")
 			log.Println(err)
@@ -254,7 +259,7 @@ func (self *handler) checkHash(hash string) (string, error) {
 
 func (self *handler) handleText(body Body) (string, error) {
 	// Check if post already exists
-	hash := hashText(body.value)
+	hash := hashText(body.Value)
 	shortId, err := self.checkHash(hash)
 	if err != nil {
 		log.Println(err)
@@ -275,14 +280,14 @@ func (self *handler) handleText(body Body) (string, error) {
 	defer fileCreated.Close()
 
 	// Write the body contents to the new file
-	_, err = fileCreated.WriteString(body.value)
+	_, err = fileCreated.WriteString(body.Value)
 	if err != nil {
 		return "", err
 	}
 
 	// Save post in the database
 	_, err = self.db.Exec(`INSERT INTO pym (expire, "group", language, shortId, hash) VALUES ($1, $2, $3, $4, $5)`,
-		time.Now().Add(time.Hour), body.group, body.language, shortId, hash)
+		time.Now().Add(time.Hour), body.Group, body.Language, shortId, hash)
 	if err != nil {
 		return "", err
 	}
