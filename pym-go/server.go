@@ -267,10 +267,14 @@ func (self *handler) handleText(body Body) (string, error) {
 		return shortId, nil
 	}
 
+	log.Println("OK hash was not found!")
+
 	shortId, err = self.generateShortID()
 	if err != nil {
 		return "", err
 	}
+
+	log.Printf("Generated shortID: %s", shortId)
 
 	fileCreated, err := os.Create(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
 	if err != nil {
@@ -290,6 +294,8 @@ func (self *handler) handleText(body Body) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	log.Printf("Ok put %s into DB", body.Value)
 
 	return shortId, nil
 }
