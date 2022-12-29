@@ -186,9 +186,9 @@ func (self *handler) generateShortID() (string, error) {
 }
 
 type Body struct {
-	Group    string `json:"group"`
-	Language string `json:"language"`
-	Value    string `json:"hash"`
+	Group    string
+	Language string
+	Value    string
 }
 
 // type Form struct {
@@ -202,8 +202,6 @@ type Form struct {
 
 func (self *handler) saveRouter(c *gin.Context) {
 	form := Form{}
-	x, _ := io.ReadAll(c.Request.Body)
-	log.Println(string(x))
 
 	// Bind the request to the Form
 	if err := c.ShouldBind(&form); err != nil {
