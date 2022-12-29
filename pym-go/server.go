@@ -151,9 +151,6 @@ func hashFile(file multipart.File) (string, error) {
 }
 
 func hashText(buffer string) string {
-	log.Println("---------")
-	log.Printf("The value is: %s", buffer)
-	log.Printf("-------------")
 	return fmt.Sprintf("%x", sha1.Sum([]byte(buffer)))
 }
 
@@ -192,27 +189,20 @@ type Body struct {
 	Value    string
 }
 
-// type Form struct {
-// 	File *multipart.FileHeader `form:"files"`
-// }
-
 type Form struct {
-	File    *multipart.FileHeader `form:"files"`
-	ReqBody Body                  `json:"body"`
+	File *multipart.FileHeader `form:"files"`
 }
 
 func (self *handler) saveRouter(c *gin.Context) {
 	if c.GetHeader("Content-Type") == "application/json" {
 		requestBody := Body{}
 		if err := c.BindJSON(&requestBody); err != nil {
-			log.Println("in hereee")
 			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 		shortId, err := self.handleText(requestBody)
 		if err != nil {
-			log.Println("abort abort abort")
 			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
 		}
@@ -221,13 +211,9 @@ func (self *handler) saveRouter(c *gin.Context) {
 		form := Form{}
 		// Bind the request to the Form
 		if err := c.ShouldBind(&form); err != nil {
-			log.Println("u done goofed up")
 			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
 		}
-
-		log.Println("ok gets here?")
-
 		if form.File.Size > self.maxFileSize {
 			log.Printf("Requested upload file size: %d", form.File.Size)
 			c.AbortWithStatus(http.StatusRequestEntityTooLarge)
@@ -260,7 +246,6 @@ func (self *handler) checkHash(hash string) (string, error) {
 func (self *handler) handleText(body Body) (string, error) {
 	// Check if post already exists
 	hash := hashText(body.Value)
-	log.Printf("ok hash is: %s and the value is: %s", hash, body.Value)
 	shortId, err := self.checkHash(hash)
 	if err != nil {
 		log.Println(err)
@@ -269,14 +254,10 @@ func (self *handler) handleText(body Body) (string, error) {
 		return shortId, nil
 	}
 
-	log.Println("OK hash was not found!")
-
 	shortId, err = self.generateShortID()
 	if err != nil {
 		return "", err
 	}
-
-	log.Printf("Generated shortID: %s", shortId)
 
 	fileCreated, err := os.Create(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
 	if err != nil {
@@ -296,8 +277,6 @@ func (self *handler) handleText(body Body) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	log.Printf("Ok put %s into DB", body.Value)
 
 	return shortId, nil
 }
