@@ -92,7 +92,7 @@ func (self *handler) displayRouter(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"value": value, "group": group, "language": language})
+	c.JSON(200, gin.H{"value": string(value), "group": group, "language": language})
 
 	// Update the expired field of the post
 	err = self.updateExpire(shortId)
