@@ -12,20 +12,22 @@ import (
 
 func (self *handler) displayRouter(c *gin.Context) {
 	shortId := c.Param("id")
+	// Fetch the metadata of the post
 	_, group, language, err := self.fetchPost(shortId)
 
-	// Check for errors
+	// No post found with the given shortId
 	if err == sql.ErrNoRows {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.JSON(http.StatusOK, gin.H{"value": "Sorry, no post with that ID! :P", "group": "text", "language": "plaintext"})
+		// Other error
 	} else if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 
-	value, err := os.ReadFile(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
+	value, err := os.ReadFile(filepath.Join(self.uploadUrl, shortId))
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"Error": err})
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 

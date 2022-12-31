@@ -16,6 +16,7 @@ type handler struct {
 	db          *sql.DB
 	maxFileSize int64
 	maxTries    int64
+	uploadUrl   string
 }
 
 type Body struct {
@@ -62,6 +63,8 @@ func (self *handler) generateShortID() (string, error) {
 	var count int
 	var shortId string
 	b := make([]byte, 2)
+
+	// Try to generate a unique shortId a `max.tries` amount of times
 	for i := int64(0); i <= self.maxTries; i += 1 {
 		_, err := rand.Read(b)
 		if err != nil {
@@ -75,6 +78,7 @@ func (self *handler) generateShortID() (string, error) {
 		if err != nil {
 			log.Println(err)
 		}
+		// Generated a unique shortId, can exit
 		if count == 0 {
 			break
 		}
@@ -93,10 +97,13 @@ func (self *handler) checkHash(hash string) (string, error) {
 	err := row.Scan(&shortId)
 
 	switch err {
+	// No errors, a post with the hash was found
 	case nil:
 		return shortId, nil
+	// No post with the hash exists
 	case sql.ErrNoRows:
 		return "", nil
+	// Some other error happened
 	default:
 		return "", err
 	}

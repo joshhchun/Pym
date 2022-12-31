@@ -12,8 +12,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Handler for saving a post
 func (self *handler) saveRouter(c *gin.Context) {
-	if c.GetHeader("Content-Type") == "application/json" {
+	header := c.GetHeader("Content-Type")
+	switch header {
+	// User is trying to save text / url
+	case "application/json":
 		requestBody := Body{}
 		if err := c.BindJSON(&requestBody); err != nil {
 			log.Println(err)
@@ -26,7 +30,8 @@ func (self *handler) saveRouter(c *gin.Context) {
 			c.AbortWithStatus(http.StatusBadRequest)
 		}
 		c.JSON(200, gin.H{"shortId": shortId})
-	} else {
+	// User is trying to save a file
+	case "multipart/form-data":
 		form := Form{}
 		// Bind the request to the Form
 		if err := c.ShouldBind(&form); err != nil {
@@ -34,7 +39,7 @@ func (self *handler) saveRouter(c *gin.Context) {
 			c.AbortWithStatus(http.StatusBadRequest)
 		}
 		if form.File.Size > self.maxFileSize {
-			log.Printf("Requested upload file size: %d", form.File.Size)
+			log.Printf("Requested upload file size too large: %d", form.File.Size)
 			c.AbortWithStatus(http.StatusRequestEntityTooLarge)
 			return
 		}
@@ -44,16 +49,21 @@ func (self *handler) saveRouter(c *gin.Context) {
 			return
 		}
 		c.JSON(200, gin.H{"shortId": shortId})
+	default:
+		log.Printf("Non expected content-type: %s")
+		c.AbortWithStatus(http.StatusBadRequest)
 	}
 }
 
 func (self *handler) handleText(body Body) (string, error) {
-	// Check if post already exists
+	// Retrieve the SHA1 Hash of the text
 	hash := hashText(body.Value)
+	// Check if the hash already exists in the database
 	shortId, err := self.checkHash(hash)
 	if err != nil {
 		log.Println(err)
 	}
+	// Post with the hash already exists, return existing shortId
 	if shortId != "" {
 		return shortId, nil
 	}
@@ -63,7 +73,7 @@ func (self *handler) handleText(body Body) (string, error) {
 		return "", err
 	}
 
-	fileCreated, err := os.Create(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
+	fileCreated, err := os.Create(filepath.Join(self.uploadUrl, shortId))
 	if err != nil {
 		return "", err
 	}
@@ -115,7 +125,7 @@ func (self *handler) handleFile(file *multipart.FileHeader) (string, error) {
 	}
 
 	// Create the new file
-	fileCreated, err := os.Create(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
+	fileCreated, err := os.Create(filepath.Join(self.uploadUrl, shortId))
 	if err != nil {
 		return "", err
 	}

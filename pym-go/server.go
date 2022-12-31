@@ -19,11 +19,13 @@ func main() {
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
 
-	obj := handler{maxFileSize: (2 << 20) * 8, maxTries: 8}
+	// Max file size is 20MB
+	obj := handler{maxFileSize: (2 << 20) * 20, maxTries: 8, uploadUrl: os.Getenv("UPLOAD_URL")}
 	err = obj.initDb()
 	if err != nil {
 		log.Panic(err)
 	}
+
 	// Init gin server
 	r := gin.Default()
 
