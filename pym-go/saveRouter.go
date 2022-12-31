@@ -50,7 +50,7 @@ func (self *handler) saveRouter(c *gin.Context) {
 		}
 		c.JSON(200, gin.H{"shortId": shortId})
 	default:
-		log.Printf("Non expected content-type: %s")
+		log.Printf("Non expected content-type: %s", header)
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
 }
@@ -87,7 +87,7 @@ func (self *handler) handleText(body Body) (string, error) {
 
 	// Save post in the database
 	_, err = self.db.Exec(`INSERT INTO pym (expire, "group", language, shortId, hash) VALUES ($1, $2, $3, $4, $5)`,
-		time.Now().Add(time.Hour), body.Group, body.Language, shortId, hash)
+		time.Now().AddDate(0, 0, 15), body.Group, body.Language, shortId, hash)
 	if err != nil {
 		return "", err
 	}

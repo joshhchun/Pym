@@ -12,12 +12,13 @@ import (
 
 func (self *handler) rawRouter(c *gin.Context) {
 	shortId := c.Param("id")
+	// Get post's metadata
 	_, group, _, err := self.fetchPost(shortId)
 
-	// Check for errors
+	// No post found with the given shortId
 	if err != nil {
 		if err == sql.ErrNoRows {
-			c.AbortWithStatus(http.StatusNotFound)
+			c.String(200, "Sorry, no post with that ID! :P")
 		} else {
 			log.Println(err)
 			c.AbortWithStatus(http.StatusInternalServerError)
@@ -25,14 +26,17 @@ func (self *handler) rawRouter(c *gin.Context) {
 		return
 	}
 
-	/** TODO: maybe change all of these into c.File? **/
+	// Serve content depending on group
 	switch group {
-	case "image":
-		c.File(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
-	case "text":
-		c.File(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
+	case "image", "text":
+		c.File(filepath.Join(self.uploadUrl, shortId))
 	case "link":
-		x, _ := os.ReadFile(filepath.Join(os.Getenv("UPLOAD_URL"), shortId))
+		x, err := os.ReadFile(filepath.Join(self.uploadUrl, shortId))
+		if err != nil {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
 		c.Redirect(302, string(x))
 	default:
 		log.Printf("Unexpected group: %s\n", group)
@@ -45,5 +49,4 @@ func (self *handler) rawRouter(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
-
 }

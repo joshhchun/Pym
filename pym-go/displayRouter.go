@@ -16,12 +16,14 @@ func (self *handler) displayRouter(c *gin.Context) {
 	_, group, language, err := self.fetchPost(shortId)
 
 	// No post found with the given shortId
-	if err == sql.ErrNoRows {
-		c.JSON(http.StatusOK, gin.H{"value": "Sorry, no post with that ID! :P", "group": "text", "language": "plaintext"})
-		// Other error
-	} else if err != nil {
-		log.Println(err)
-		c.AbortWithStatus(http.StatusInternalServerError)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusOK, gin.H{"value": "Sorry, no post with that ID! :P", "group": "text", "language": "plaintext"})
+		} else {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+		}
+		return
 	}
 
 	value, err := os.ReadFile(filepath.Join(self.uploadUrl, shortId))
