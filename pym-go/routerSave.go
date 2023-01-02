@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -15,9 +16,9 @@ import (
 // Handler for saving a post
 func (self *handler) saveRouter(c *gin.Context) {
     header := c.GetHeader("Content-Type")
-    switch header {
+    switch {
     // User is trying to save text / url
-    case "application/json":
+    case header == "application/json":
         requestBody := Body{}
         if err := c.BindJSON(&requestBody); err != nil {
             log.Println(err)
@@ -31,7 +32,7 @@ func (self *handler) saveRouter(c *gin.Context) {
         }
         c.JSON(200, gin.H{"shortId": shortId})
     // User is trying to save a file
-    case "multipart/form-data":
+    case strings.HasPrefix(header, "multipart/form-data"):
         form := Form{}
         // Bind the request to the Form
         if err := c.ShouldBind(&form); err != nil {
@@ -45,6 +46,7 @@ func (self *handler) saveRouter(c *gin.Context) {
         }
         shortId, err := self.handleFile(form.File)
         if err != nil {
+            log.Println(err)
             c.AbortWithStatus(http.StatusInternalServerError)
             return
         }
