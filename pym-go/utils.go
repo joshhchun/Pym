@@ -36,6 +36,7 @@ var textMimeTypes = map[string]string{
     "application/vnd.ms-excel":  "excel",
     "application/x-latex":       "latex",
     "application/x-python-code": "python",
+    "text/x-python-script":      "python",
     "application/x-sh":          "shell",
     "text/css":                  "css",
     "text/html":                 "html",
