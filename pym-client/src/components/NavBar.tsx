@@ -14,7 +14,7 @@ import {
     MenuList,
 } from "@mui/material";
 import CodeIcon from "@mui/icons-material/Code";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 interface Data {
     shortId: string;
@@ -27,9 +27,9 @@ interface Props {
 }
 
 export default function NavBar(props: Props) {
-    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<any>(null);
+    const navigate = useNavigate();
 
     const handleClick = async (e: any) => {
         e.preventDefault();
@@ -45,7 +45,6 @@ export default function NavBar(props: Props) {
                 body: JSON.stringify(request),
             });
             const data: Data = await response.json();
-            console.log("response " + data);
             navigate(`/${data.shortId}`);
         } catch (e: any) {
             console.log(e.message);

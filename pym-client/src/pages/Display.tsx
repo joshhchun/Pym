@@ -13,7 +13,7 @@ interface Model {
 }
 
 export async function getPost(id: string) {
-  const response = await fetch(`http://127.0.0.1:8000/api/display/${id}`);
+  const response = await fetch(`https://pym.jchun.me/api/display/${id}`);
   const response_data: Model = await response.json();
   return response_data ?? null;
 }
