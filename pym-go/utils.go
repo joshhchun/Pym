@@ -1,16 +1,16 @@
 package main
 
 import (
-    "crypto/rand"
-    "crypto/sha1"
-    "database/sql"
-    "encoding/hex"
-    "fmt"
-    "io"
-    "log"
-    "mime/multipart"
-    "strings"
-    "time"
+	"crypto/rand"
+	"crypto/sha1"
+	"database/sql"
+	"encoding/hex"
+	"fmt"
+	"io"
+	"log"
+	"mime/multipart"
+	"strings"
+	"time"
 )
 
 type handler struct {
@@ -28,6 +28,20 @@ type Body struct {
 
 type Form struct {
     File *multipart.FileHeader `form:"files"`
+}
+
+var textMimeTypes = map[string]string{
+    "text/javascript":           "javascript",
+    "application/json":          "json",
+    "application/vnd.ms-excel":  "excel",
+    "application/x-latex":       "latex",
+    "application/x-python-code": "python",
+    "application/x-sh":          "shell",
+    "text/css":                  "css",
+    "text/html":                 "html",
+    "text/plain":                "plaintext",
+    "text/x-python":             "python",
+    "text/x-c":                  "c",
 }
 
 // If link does not have https, add it
@@ -94,7 +108,7 @@ func (self *handler) generateShortID() (string, error) {
 
     // If we are out of the loop and the count is not 0, then we could not make new entry
     if count != 0 {
-        return "", fmt.Errorf("Could not make new entry in database.")
+        return "", fmt.Errorf("could not make new entry in database")
     }
     return shortId, nil
 }

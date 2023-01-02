@@ -1,15 +1,15 @@
 package main
 
 import (
-    "io"
-    "log"
-    "mime/multipart"
-    "net/http"
-    "os"
-    "path/filepath"
-    "time"
+	"io"
+	"log"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"path/filepath"
+	"time"
 
-    "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
 // Handler for saving a post
@@ -109,6 +109,10 @@ func (self *handler) handleFile(file *multipart.FileHeader) (string, error) {
 
     // Get the hash of the file
     hash, err := hashFile(openedFile)
+    if (err) != nil {
+        return "", err
+    }
+
     shortId, err := self.checkHash(hash)
     if err != nil {
         log.Println(err)
@@ -141,9 +145,17 @@ func (self *handler) handleFile(file *multipart.FileHeader) (string, error) {
         return "", err
     }
 
+    fileType := "image"
+    language := ""
+    // If the file is a text/code file then do not save it as image
+    if val, exists := textMimeTypes[file.Header.Get("Content-Type")]; exists {
+        fileType = "text"
+        language = val
+    }
+
     // Save post in the database
     _, err = self.db.Exec(`INSERT INTO pym (expire, "group", language, shortId, hash) VALUES ($1, $2, $3, $4, $5)`,
-        time.Now().Add(time.Hour), "image", "", shortId, hash)
+        time.Now().AddDate(0, 0, 15), fileType, language, shortId, hash)
     if err != nil {
         return "", err
     }

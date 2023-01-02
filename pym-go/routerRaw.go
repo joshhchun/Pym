@@ -39,7 +39,7 @@ func (self *handler) rawRouter(c *gin.Context) {
         }
         c.Redirect(302, string(x))
     default:
-        log.Printf("Unexpected group: %s\n", group)
+        log.Printf("Unexpected group: %s", group)
         c.AbortWithStatus(http.StatusMethodNotAllowed)
         return
     }
