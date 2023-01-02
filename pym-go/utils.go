@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
+	"strings"
 	"time"
 )
 
@@ -27,6 +28,13 @@ type Body struct {
 
 type Form struct {
 	File *multipart.FileHeader `form:"files"`
+}
+
+// If link does not have https, add it
+func handleLink(body *Body) {
+	if !strings.HasPrefix(body.Value, "https://") {
+		body.Value = fmt.Sprintf("%s%s", "https://", body.Value)
+	}
 }
 
 // hashFile returns the SHA1 hash of the given content

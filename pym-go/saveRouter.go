@@ -56,6 +56,10 @@ func (self *handler) saveRouter(c *gin.Context) {
 }
 
 func (self *handler) handleText(body Body) (string, error) {
+	// Handle link if it doesnt have HTTPS
+	if body.Group == "link" {
+		handleLink(&body)
+	}
 	// Retrieve the SHA1 Hash of the text
 	hash := hashText(body.Value)
 	// Check if the hash already exists in the database
