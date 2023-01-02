@@ -9,6 +9,7 @@ import {
     Autocomplete,
 } from "@mui/material";
 import React from "react";
+import "../App.css"
 
 const theme = createTheme({
     palette: {
