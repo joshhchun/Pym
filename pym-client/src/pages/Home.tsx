@@ -22,7 +22,7 @@ def permutations(length, alphabet=ALPHABET):
                 yield letter + ele
 
 
-# Created by Josh Chun with Typescript, Express, React, Node, MongoDB, Docker, Nginx, & Caddy
+# Created by Josh Chun with Golang, Typescript, React, PostgreSQL, Docker, Nginx, & Caddy
 # Source code @ github.com/joshhchun/Pym`;
 
     return (
