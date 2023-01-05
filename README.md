@@ -1,6 +1,6 @@
 ## Tech Stack:
 
-_MERN + Typescript (MongoDB, Express.JS, React.JS, Node.JS), Docker, Nginx, & Caddy_
+_Golang, Typescript, React, Docker, Nginx, & Caddy_
 
 # What is it?
 
@@ -59,8 +59,13 @@ curl -d '{"group": "text", "language": "plaintext", "value":"$TEXT"}' \
 <img width="1440" alt="newfile" src="https://user-images.githubusercontent.com/76039575/177060864-e82f8053-95f7-426a-bc48-18d47c3869b0.png">
 
 -   User can either drag and drop a file or browse.
--   Currently supports **JPEG**, **PNG**, **HEIC**, **.txt**, **.py**, and **.js**. More file support will be coming shortly.
 -   Upon upload, user will be redirected to the new unique URL for sharing.
+-   From the CLI:
+``` bash
+curl -F "files=@$FILEPATH" https://pym.jchun.me/api/save
+```
+
+`Response > {"shortId": "foo1"}`
 
 ## Shorten a URL
 
@@ -84,9 +89,10 @@ Right now, I am very happy with where Pym is. I think it is great for _what it's
 ## Immediate Updates:
 
 -   Allow for more file types to be uploaded
--   Setup Cronjob for automatic database cleanups (every post has a life time of 15 days, but DB could get cluttered)
+-   ~~Setup Cronjob for automatic database cleanups (every post has a life time of 15 days, but DB could get cluttered)~~
 
 ## Possible Updates:
 
--   Setting up a Redis cache for quicker experience (MongoDB already has a _LRU-Like_ cache system with indexes, but it does not save the value retrieved from queries). However, right now I believe the website doesn't have enough users where the memory/speed trade-off would be worth it.
+-   ~~Setting up a Redis cache for quicker experience (MongoDB already has a _LRU-Like_ cache system with indexes, but it does not save the value retrieved from queries). However, right now I believe the website doesn't have enough users where the memory/speed trade-off would be worth it.~~
+     -    Migrated to React-Query, which implements a cache system
 -   Migrating to a Next.JS / Prisma app? :eyes:
