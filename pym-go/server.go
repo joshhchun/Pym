@@ -26,6 +26,8 @@ func main() {
         log.Panic(err)
     }
 
+    defer obj.db.Close()
+
     // Init gin server
     r := gin.Default()
 

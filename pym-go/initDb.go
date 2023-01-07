@@ -22,6 +22,10 @@ func (self *handler) initDb() error {
         return err
     }
 
+    // Set the maximum number of idle connections and open connections
+    db.SetMaxIdleConns(25)
+    db.SetMaxOpenConns(100)
+
     self.db = db
     _, err = self.db.Exec(
         `CREATE TABLE IF NOT EXISTS pym (
