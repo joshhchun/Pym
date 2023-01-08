@@ -1,10 +1,9 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLoaderData } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { ocean } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 import Container from "@mui/material/Container";
 import "../App.css";
-import { useQuery } from "@tanstack/react-query";
 
 interface Model {
   group: string;
@@ -12,41 +11,16 @@ interface Model {
   language: any;
 }
 
-export async function getPost(id: string) {
-  const response = await fetch(`https://pym.jchun.me/api/display/${id}`);
-  const response_data: Model = await response.json();
-  return response_data ?? null;
-}
-
-const postQuery = (id: string) => ({
-  queryKey: ["post", id],
-  queryFn: async () => {
-    const post = await getPost(id);
-    if (!post) {
-      throw new Response("", {
-        status: 404,
-        statusText: "Not Found",
-      });
-    }
-    return post;
-  },
-});
-
 export const loader =
-  (queryClient: any) =>
-  //@ts-ignore
-  async ({ params }) => {
-    const query = postQuery(params.id);
-    return (
-      queryClient.getQueryData(query.queryKey) ??
-      (await queryClient.fetchQuery(query))
-    );
+  async ({ params }: any) => {
+      const res = await fetch(`https://pym.jchun.me/api/display/${params.id}`);
+      const data: Model = await res.json()
+      return data
   };
 
 const Display = () => {
-  let { id } = useParams();
-  //@ts-ignore
-  const { data: post } = useQuery(postQuery(id));
+  const { id } = useParams();
+  const post = useLoaderData() as Model;
 
   if (post!.group === "link") {
     window.location.href = post!.value;

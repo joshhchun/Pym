@@ -26,11 +26,15 @@ func (self *handler) displayRouter(c *gin.Context) {
         return
     }
 
-    value, err := os.ReadFile(filepath.Join(self.uploadUrl, shortId))
-    if err != nil {
-        log.Println(err)
-        c.AbortWithStatus(http.StatusInternalServerError)
-        return
+    // If it is an image, no need to read the file
+    value := make([]byte, 0)
+    if group != "image" {
+        value, err = os.ReadFile(filepath.Join(self.uploadUrl, shortId))
+        if err != nil {
+            log.Println(err)
+            c.AbortWithStatus(http.StatusInternalServerError)
+            return
+        }
     }
 
     c.JSON(200, gin.H{"value": string(value), "group": group, "language": language})

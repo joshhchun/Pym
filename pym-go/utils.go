@@ -1,16 +1,16 @@
 package main
 
 import (
-	"crypto/rand"
-	"crypto/sha1"
-	"database/sql"
-	"encoding/hex"
-	"fmt"
-	"io"
-	"log"
-	"mime/multipart"
-	"strings"
-	"time"
+    "crypto/rand"
+    "crypto/sha1"
+    "database/sql"
+    "encoding/hex"
+    "fmt"
+    "io"
+    "log"
+    "mime/multipart"
+    "strings"
+    "time"
 )
 
 type handler struct {
