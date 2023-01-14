@@ -1,78 +1,93 @@
 .App {
-  text-align: center;
-  height: 100%;
+    text-align: center;
+    height: 100%;
 }
 
-
-.filepond--root .filepond--drop-label {
-  color: rgb(218, 214, 214);
-  /* background: #4f555f; */
+code .mantine-Prism-lineContent {
+    white-space: pre-wrap;
+    overflow: auto;
+    word-break: break-word;
 }
-.filepond--root .filepond--panel-root {
-  background-color: #4f555f;
+
+pre .mantine-Prism-lineContent {
+    white-space: pre-wrap;
+    overflow: auto;
+    word-break: break-word;
+}
+
+.testing {
+    z-index: 4;
+    position: absolute;
 }
 
 .copy {
-  display: flex;
+    display: flex;
 }
 
 .fp {
-  margin: 5rem 2rem;
+    margin: 5rem 2rem;
+}
+
+.filepond--root {
+    height: 15rem;
+}
+
+.filepond--credits {
+    display: none;
+}
+
+.filepond--root .filepond--drop-label label {
+    font-weight: 500;
+    font-size: 1.2rem;
 }
 
 .text {
-  text-align: left;
-}
-
-@media only screen and (max-width: 1200px) {
-  syntax-highlighter {
-    font-size: 95%;
-  }
-}
-
-@media only screen and (max-width: 900px) {
-  syntax-highlighter {
-    font-size: 90%;
-  }
+    text-align: left;
 }
 
 @media only screen and (max-width: 600px) {
-  syntax-highlighter {
-    font-size: 75%;
-  }
+    code .mantine-Prism-lineContent {
+        font-size: 90%;
+    }
+    pre .mantine-Prism-lineContent {
+        font-size: 90%;
+    }
+    .mantine-Title-root {
+        font-size: 32px;
+    }
 }
 
 .App-logo {
-  height: 40vmin;
-  pointer-events: none;
+    height: 40vmin;
+    pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+    .App-logo {
+        animation: App-logo-spin infinite 20s linear;
+    }
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
 }
 
 .App-link {
-  color: #61dafb;
+    color: #61dafb;
 }
 
 @keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

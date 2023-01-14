@@ -1,149 +1,114 @@
 import { useState } from "react";
 import { languages } from "../utils/languages";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import NavBar from "../components/NavBar";
+import { useWindowScroll } from "@mantine/hooks";
+import { IconArrowUp } from "@tabler/icons";
+import { useNavigate } from "react-router-dom";
 import {
-    TextField,
-    InputLabel,
-    FormControl,
+    Container,
     Autocomplete,
-} from "@mui/material";
-import React from "react";
-import "../App.css"
-
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: "#a1a1aa",
-            contrastText: "#fff",
-        },
-    },
-});
+    Textarea,
+    Flex,
+    Affix,
+    Transition,
+    Button,
+} from "@mantine/core";
+import "../App.css";
 
 const NewText = () => {
     const [value, setValue] = useState("");
     const [language, setLanguage] = useState("python");
+    const [scroll, scrollTo] = useWindowScroll();
+    const navigate = useNavigate();
+
+    const handleClick = async (e: any) => {
+        e.preventDefault();
+        const request = {
+            group: "text",
+            language: language,
+            value: value,
+        };
+        try {
+            const response = await fetch("https://pym.jchun.me/api/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(request),
+            });
+            const data = await response.json();
+            navigate(`/${data.shortId}`);
+        } catch (e: any) {
+            console.error(e.message);
+        }
+    };
 
     return (
-        <ThemeProvider theme={theme}>
-            <NavBar canSave={true} value={value} language={language} />
-            <div>
-                <FormControl
-                    sx={{
-                        mt: "3rem",
-                        mb: "2rem",
-                        width: "90%",
-                    }}
-                    focused
-                >
-                    <InputLabel
-                        id="demo-customized-select-label"
-                        style={{ color: "#a1a1aa" }}
-                    >
-                        Language
-                    </InputLabel>
+        <Container>
+            <Affix position={{ bottom: 30, right: 30 }}>
+                <Transition transition="slide-up" mounted={scroll.y > 0}>
+                    {(transitionStyles) => (
+                        <Button
+                            leftIcon={<IconArrowUp size={16} />}
+                            style={transitionStyles}
+                            onClick={() => scrollTo({ y: 0 })}
+                        >
+                            Scroll to top
+                        </Button>
+                    )}
+                </Transition>
+            </Affix>
+            <Flex direction="column" gap="lg">
+                <Flex direction="row" gap="sm" justify="left" align="flex-end">
                     <Autocomplete
-                        id="combo-box"
-                        options={languages}
-                        disableClearable
-                        forcePopupIcon={false}
-                        onChange={(e, v) => {
-                            setLanguage(v);
-                        }}
+                        sx={{ textAlign: "left", width: "30%" }}
+                        label="Pick a language"
+                        placeholder="Pick one"
+                        data={languages}
                         value={language}
-                        style={{
-                            width: "20%",
-                            zIndex: 2,
-                        }}
-                        renderInput={(params) => (
-                            <TextField
-                                focused
-                                {...params}
-                                sx={{
-                                    mt: "1rem",
-                                    "& .MuiInputBase-input": {
-                                        borderRadius: 2,
-                                        height: "2.5rem",
-                                        position: "relative",
-                                        textAlign: "center",
-                                        backgroundColor: "#434852",
-                                        border: "1px solid #a1a1aa",
-                                        fontSize: "1rem",
-                                        color: "white",
-                                        transition: theme.transitions.create([
-                                            "border-color",
-                                            "box-shadow",
-                                        ]),
-                                        "&:focus": {
-                                            borderRadius: 2,
-                                            borderColor: "#e8f3ff",
-                                            boxShadow:
-                                                "0 0 0 0.2rem rgba(255, 255, 255, .5)",
-                                        },
-                                    },
-                                }}
-                                variant="standard"
-                                InputProps={{
-                                    ...params.InputProps,
-                                    disableUnderline: true,
-                                }}
-                            />
-                        )}
+                        onChange={setLanguage}
                     />
-                </FormControl>
-                <FormControl
-                    sx={{
-                        width: "90%",
+                    <Button
+                        sx={(theme) => ({
+                            backgroundColor: theme.colors.dark[5],
+                        })}
+                        component="a"
+                        href="/api/save"
+                        onClick={handleClick}
+                    >
+                        Save Post
+                    </Button>
+                </Flex>
+                <Textarea
+                    placeholder="Paste text here..."
+                    autosize
+                    minRows={5}
+                    value={value}
+                    onChange={(event) => setValue(event.currentTarget.value)}
+                    onKeyDown={(e) => {
+                        const target = e.target as HTMLInputElement;
+                        const { value } = target as HTMLInputElement;
+                        if (e.key === "Tab") {
+                            e.preventDefault();
+                            const cursorPosition = target.selectionStart;
+                            const cursorEndPosition = target.selectionEnd;
+                            const tab = "\t";
+                            target.value =
+                                value.substring(
+                                    0,
+                                    cursorPosition as number
+                                ) +
+                                tab +
+                                value.substring(
+                                    cursorEndPosition as number
+                                );
+
+                            target.selectionStart =
+                                (cursorPosition as number) + 1;
+                            target.selectionEnd =
+                                (cursorPosition as number) + 1;
+                        }
                     }}
-                >
-                    <TextField
-                        variant="standard"
-                        placeholder="write text here..."
-                        focused
-                        color="primary"
-                        id="outlined-multiline-static"
-                        multiline
-                        fullWidth
-                        minRows={30}
-                        value={value}
-                        onChange={(e) => setValue(e.target.value)}
-                        onKeyDown={(e) => {
-                            const target = e.target as HTMLInputElement;
-                            const { value } = target as HTMLInputElement;
-                            if (e.key === "Tab") {
-                                e.preventDefault();
-                                const cursorPosition = target.selectionStart;
-                                const cursorEndPosition = target.selectionEnd;
-                                const tab = "\t";
-
-                                target.value =
-                                    value.substring(
-                                        0,
-                                        cursorPosition as number
-                                    ) +
-                                    tab +
-                                    value.substring(
-                                        cursorEndPosition as number
-                                    );
-
-                                target.selectionStart =
-                                    (cursorPosition as number) + 1;
-                                target.selectionEnd =
-                                    (cursorPosition as number) + 1;
-                            }
-                        }}
-                        InputProps={{
-                            disableUnderline: true,
-                            style: {
-                                fontFamily:
-                                    "source-code-pro, Menlo, Monaco, Consolas, 'Courier New'",
-                                color: "white",
-                            },
-                        }}
-                    />
-                </FormControl>
-            </div>
-        </ThemeProvider>
+                />
+            </Flex>
+        </Container>
     );
 };
 

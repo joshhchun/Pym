@@ -1,220 +1,125 @@
-import { useState, useRef, useEffect } from "react";
 import {
-    AppBar,
-    Box,
-    Toolbar,
-    Typography,
-    Button,
-    IconButton,
-    ClickAwayListener,
-    Grow,
-    Paper,
-    Popper,
-    MenuItem,
-    MenuList,
-} from "@mui/material";
-import CodeIcon from "@mui/icons-material/Code";
-import { useNavigate } from "react-router-dom";
+    Center,
+    Container,
+    Text,
+    createStyles,
+    Header,
+    Group,
+    Menu,
+} from "@mantine/core";
 
-interface Data {
-    shortId: string;
-}
+import {
+    IconChevronDown,
+    IconFile,
+    IconAlphabetLatin,
+    IconLink,
+} from "@tabler/icons";
 
-interface Props {
-    canSave: boolean;
-    value: string | null;
-    language: string | null;
-}
-
-export default function NavBar(props: Props) {
-    const [open, setOpen] = useState(false);
-    const anchorRef = useRef<any>(null);
-    const navigate = useNavigate();
-
-    const handleClick = async (e: any) => {
-        e.preventDefault();
-        const request = {
-            group: "text",
-            language: props.language,
-            value: props.value,
-        };
-        try {
-            const response = await fetch("https://pym.jchun.me/api/save", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(request),
-            });
-            const data: Data = await response.json();
-            navigate(`/${data.shortId}`);
-        } catch (e: any) {
-            console.log(e.message);
+const useStyles = createStyles((theme) => ({
+    header: {
+        height: 56,
+        marginBottom: 80,
+        [theme.fn.smallerThan(600)]: {
+                marginBottom: 40
         }
-    };
+    },
+    inner: {
+        height: 56,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
 
-    const handleToggle = () => {
-        setOpen((prevOpen) => !prevOpen);
-    };
+    link: {
+        display: "block",
+        lineHeight: 1,
+        padding: "8px 12px",
+        borderRadius: theme.radius.sm,
+        textDecoration: "none",
+        color: theme.colors.dark[0],
+        fontSize: theme.fontSizes.sm,
+        fontWeight: 500,
 
-    const handleClose = (event: { target: any }) => {
-        if (anchorRef.current && anchorRef.current.contains(event.target)) {
-            return;
-        }
+        "&:hover": {
+            backgroundColor: theme.colors.dark[4],
+        },
+    },
 
-        setOpen(false);
-    };
+    linkLabel: {
+        marginRight: 5,
+        color: "white",
+    },
+}));
 
-    function handleListKeyDown(event: any) {
-        if (event.key === "Tab") {
-            event.preventDefault();
-            setOpen(false);
-        } else if (event.key === "Escape") {
-            setOpen(false);
-        }
-    }
-
-    // return focus to the button when we transitioned from !open -> open
-    const prevOpen = useRef(open);
-    useEffect(() => {
-        if (prevOpen.current === true && open === false) {
-            if (anchorRef.current) anchorRef.current.focus();
-        }
-        prevOpen.current = open;
-    }, [open]);
+export default function NavBar() {
+    const { classes } = useStyles();
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="sticky" sx={{ backgroundColor: "#353b48" }}>
-                <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        sx={{ mr: 2, color: "white" }}
-                    >
-                        <CodeIcon />
-                    </IconButton>
-                    <Typography
-                        variant="h5"
-                        component="a"
-                        href="/"
-                        sx={{
-                            flexGrow: 1,
-                            textAlign: "justify",
-                            mt: "-4px",
-                            color: "white",
-                            textDecoration: "none",
-                            fontWeight: "700",
-                        }}
-                    >
-                        pym
-                    </Typography>
-                    <Button
-                        ref={anchorRef}
-                        id="composition-button"
-                        aria-controls={open ? "composition-menu" : undefined}
-                        aria-expanded={open ? "true" : undefined}
-                        aria-haspopup="true"
-                        onClick={handleToggle}
-                        sx={{
-                            textTransform: "none",
-                            fontSize: "1.2rem",
-                            color: "white",
-                            textDecoration: "none",
-                            fontWeight: "700",
-                        }}
-                    >
-                        new
-                    </Button>
-                    <Popper
-                        open={open}
-                        anchorEl={anchorRef.current}
-                        role={undefined}
-                        placement="bottom-start"
-                        transition
-                        disablePortal
-                        style={{
-                            zIndex: 4,
-                        }}
-                    >
-                        {({ TransitionProps, placement }) => (
-                            <Grow
-                                {...TransitionProps}
-                                style={{
-                                    transformOrigin:
-                                        placement === "bottom-start"
-                                            ? "left top"
-                                            : "left bottom",
-                                }}
-                            >
-                                <Paper elevation={4}>
-                                    <ClickAwayListener
-                                        onClickAway={handleClose}
-                                    >
-                                        <MenuList
-                                            autoFocusItem={open}
-                                            id="composition-menu"
-                                            aria-labelledby="composition-button"
-                                            onKeyDown={handleListKeyDown}
-                                            sx={{
-                                                backgroundColor: "#334756",
-                                                color: "white",
-                                            }}
-                                        >
-                                            <MenuItem
-                                                style={{
-                                                    fontWeight: 700,
-                                                }}
-                                                component="a"
-                                                href="/newtext"
-                                                onClick={handleClose}
-                                            >
-                                                text
-                                            </MenuItem>
-                                            <MenuItem
-                                                style={{
-                                                    fontWeight: 700,
-                                                }}
-                                                component="a"
-                                                href="/newfile"
-                                                onClick={handleClose}
-                                            >
-                                                file
-                                            </MenuItem>
-                                            <MenuItem
-                                                style={{
-                                                    fontWeight: 700,
-                                                }}
-                                                component="a"
-                                                href="/url"
-                                                onClick={handleClose}
-                                            >
-                                                url
-                                            </MenuItem>
-                                        </MenuList>
-                                    </ClickAwayListener>
-                                </Paper>
-                            </Grow>
-                        )}
-                    </Popper>
-                    {props.canSave && (
-                        <Button
-                            color="inherit"
-                            component="a"
-                            onClick={handleClick}
-                            sx={{
-                                textTransform: "none",
-                                fontSize: "1.2rem",
-                                color: "white",
-                                textDecorations: "none",
-                                fontWeight: "700",
-                            }}
-                        >
-                            save
-                        </Button>
-                    )}
-                </Toolbar>
-            </AppBar>
-        </Box>
+        <Header
+            className={classes.header}
+        >
+            <Container>
+                <div className={classes.inner}>
+                    <Group spacing={7}>
+                        <Text c="white" fz="xl" component="a" href="/" fw={700}>
+                            Pym
+                        </Text>
+                    </Group>
+                    <Group spacing={5}>
+                        <Menu trigger="click" exitTransitionDuration={0}>
+                            <Menu.Target>
+                                <a
+                                    href="#1"
+                                    className={classes.link}
+                                    onClick={(event) => event.preventDefault()}
+                                >
+                                    <Center>
+                                        <span className={classes.linkLabel}>
+                                            Create
+                                        </span>
+                                        <IconChevronDown
+                                            size={12}
+                                            stroke={1.5}
+                                            color="white"
+                                        />
+                                    </Center>
+                                </a>
+                            </Menu.Target>
+                            <Menu.Dropdown>
+                                <Menu.Item
+                                    icon={<IconFile size={14} color="white" />}
+                                    component="a"
+                                    href="/newfile"
+                                    c="white"
+                                >
+                                    File
+                                </Menu.Item>
+                                <Menu.Item
+                                    icon={
+                                        <IconAlphabetLatin
+                                            size={14}
+                                            color="white"
+                                        />
+                                    }
+                                    component="a"
+                                    href="/newtext"
+                                    c="white"
+                                >
+                                    Paste
+                                </Menu.Item>
+                                <Menu.Item
+                                    icon={<IconLink size={14} color="white" />}
+                                    component="a"
+                                    href="/newurl"
+                                    color="white"
+                                >
+                                    URL
+                                </Menu.Item>
+                            </Menu.Dropdown>
+                        </Menu>
+                    </Group>
+                </div>
+            </Container>
+        </Header>
     );
 }
