@@ -1,35 +1,15 @@
-import TextField from "@mui/material/TextField";
 import { useState } from "react";
-import NavBar from "../components/NavBar";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { InputLabel } from "@mui/material";
-import { FormControl } from "@mui/material";
-import { IconButton } from "@mui/material";
-import ContentPasteGoIcon from "@mui/icons-material/ContentPasteGo";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import React from "react";
+import { Container, TextInput, Group } from "@mantine/core";
+import { IconClipboardCopy } from "@tabler/icons";
 
 interface Data {
     shortId: string;
 }
 
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: "#747d8e",
-            contrastText: "#fff",
-        },
-        success: {
-            main: "#029d02",
-            contrastText: "white",
-        },
-    },
-});
-
-const URL = (props: any) => {
+const URL = () => {
     const [value, setValue] = useState("");
     const [success, setSuccess] = useState(false);
-    const [url, setUrl] = useState("");
+    const [failure, setFailure] = useState(false);
 
     const handleClick = async (e: { preventDefault: () => void }) => {
         const request = { value, group: "link" };
@@ -39,131 +19,51 @@ const URL = (props: any) => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(request),
             });
-            const data: Data = await response.json(); 
-            setUrl(`https://pym.jchun.me/${data.shortId}`);
+            if (!response.ok) {
+                setFailure(true);
+                throw new Error(response.statusText);
+            }
+            const data: Data = await response.json();
+            setValue(`https://pym.jchun.me/${data.shortId}`);
             setSuccess(true);
         } catch (e: any) {
             console.log(e.message);
+            setFailure(true);
         }
     };
 
     return (
-        <div>
-            <ThemeProvider theme={theme}>
-                <NavBar canSave={false} value={null} language={null} />
-                <FormControl
-                    sx={{
-                        mt: "8rem",
-                        mb: "2rem",
-                        width: "80%",
-                    }}
-                    focused
-                >
-                    <InputLabel
-                        id="demo-customized-select-label"
-                        style={{ color: "#a1a1aa" }}
-                    >
-                        Input URL
-                    </InputLabel>
-                    <div className="copy">
-                        <TextField
-                            placeholder="paste url here..."
-                            variant="standard"
-                            fullWidth
-                            value={value}
-                            onChange={(e) => setValue(e.target.value)}
-                            sx={{
-                                mt: "1rem",
-                                "& .MuiInputBase-input": {
-                                    borderRadius: 2,
-                                    height: "2.5rem",
-                                    position: "relative",
-                                    textAlign: "center",
-                                    backgroundColor: "#434852",
-                                    border: "1px solid #a1a1aa",
-                                    fontSize: "1rem",
-                                    color: "white",
-                                    boxShadow:
-                                        "0 0 0 0.1rem rgba(255, 255, 255, .5)",
-                                    transition: theme.transitions.create([
-                                        "border-color",
-                                        "box-shadow",
-                                    ]),
-                                },
-                            }}
-                            color="primary"
-                            id="standard-basic"
-                            InputProps={{ disableUnderline: true }}
-                        />
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
-                            onClick={handleClick}
-                            sx={{
-                                mt: "7rem",
-                                position: "relative",
-                                left: "1rem",
-                                bottom: "6rem",
-                            }}
-                        >
-                            <UploadFileIcon
-                                sx={{ fontSize: "2rem", color: "white" }}
-                            />
-                        </IconButton>
-                    </div>
-                    <div className="copy">
-                        <TextField
-                            sx={{
-                                mt: "5rem",
-                                "& .MuiInputBase-input": {
-                                    backgroundColor: success
-                                        ? "rgba(119, 221, 119, .2)"
-                                        : null,
-                                    borderRadius: 2,
-                                    height: "2.5rem",
-                                    position: "relative",
-                                    textAlign: "center",
-                                    fontSize: "1rem",
-                                    color: "white",
-                                },
-                            }}
-                            focused
-                            fullWidth
-                            placeholder="Generated Short URL will appear here..."
-                            id="outlined-read-only-input"
-                            variant="standard"
-                            color={success ? "success" : "primary"}
-                            label="Generated Short URL"
-                            value={url}
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                        />
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
-                            onClick={() => {
-                                navigator.clipboard.writeText(url);
-                            }}
-                            sx={{
-                                mt: "7rem",
-                                position: "relative",
-                                left: "1rem",
-                                bottom: "0.5rem",
-                            }}
-                        >
-                            <ContentPasteGoIcon
-                                sx={{ fontSize: "1.8rem", color: "white" }}
-                            />
-                        </IconButton>
-                    </div>
-                </FormControl>
-            </ThemeProvider>
-        </div>
+        <Container>
+            <form onSubmit={handleClick}>
+                <Group>
+                    <TextInput
+                        sx={{ width: "90%" }}
+                        size="lg"
+                        value={value}
+                        onChange={(e) => setValue(e.currentTarget.value)}
+                        placeholder="Paste URL here..."
+                        error={
+                            failure
+                                ? "Error trying to generate a short URL"
+                                : ""
+                        }
+                        disabled={failure}
+                        styles={(theme) => ({
+                            input: {
+                                backgroundColor: success
+                                    ? theme.colors.green[9]
+                                    : theme.colors.dark[5],
+                                borderColor: success
+                                    ? theme.colors.green[4]
+                                    : "",
+                                color: success ? theme.colors.dark[8] : "",
+                            },
+                        })}
+                    />
+                    <IconClipboardCopy />
+                </Group>
+            </form>
+        </Container>
     );
 };
 
