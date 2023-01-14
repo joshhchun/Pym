@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Container, TextInput, Group } from "@mantine/core";
-import { IconClipboardCopy } from "@tabler/icons";
+import { Container, TextInput, Group, Button, Flex } from "@mantine/core";
+import { IconClipboardCopy, IconUpload } from "@tabler/icons";
 
 interface Data {
     shortId: string;
@@ -11,7 +11,8 @@ const URL = () => {
     const [success, setSuccess] = useState(false);
     const [failure, setFailure] = useState(false);
 
-    const handleClick = async (e: { preventDefault: () => void }) => {
+    const handleClick = async (e: any) => {
+        e.preventDefault();
         const request = { value, group: "link" };
         try {
             const response = await fetch("https://pym.jchun.me/api/save", {
@@ -35,7 +36,7 @@ const URL = () => {
     return (
         <Container>
             <form onSubmit={handleClick}>
-                <Group>
+                <Flex gap="md" justify="center" align="center">
                     <TextInput
                         sx={{ width: "90%" }}
                         size="lg"
@@ -59,9 +60,26 @@ const URL = () => {
                                 color: success ? theme.colors.dark[8] : "",
                             },
                         })}
+                        rightSection={
+                            success ? (
+                                <IconClipboardCopy
+                                    stroke={1.5}
+                                    size={48}
+                                    type="submit"
+                                    onClick={handleClick}
+                                    cursor="pointer"
+                                />
+                            ) : (
+                                <IconUpload
+                                    stroke={1.5}
+                                    size={32}
+                                    type="submit"
+                                    onClick={handleClick}
+                                />
+                            )
+                        }
                     />
-                    <IconClipboardCopy />
-                </Group>
+                </Flex>
             </form>
         </Container>
     );
