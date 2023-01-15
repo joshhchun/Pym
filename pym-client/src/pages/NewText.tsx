@@ -82,6 +82,30 @@ const NewText = () => {
                     minRows={5}
                     value={value}
                     onChange={(event) => setValue(event.currentTarget.value)}
+                    onKeyDown={(e) => {
+                        const target = e.target as HTMLInputElement;
+                        const { value } = target as HTMLInputElement;
+                        if (e.key === "Tab") {
+                            e.preventDefault();
+                            const cursorPosition = target.selectionStart;
+                            const cursorEndPosition = target.selectionEnd;
+                            const tab = "\t";
+                            target.value =
+                                value.substring(
+                                    0,
+                                    cursorPosition as number
+                                ) +
+                                tab +
+                                value.substring(
+                                    cursorEndPosition as number
+                                );
+
+                            target.selectionStart =
+                                (cursorPosition as number) + 1;
+                            target.selectionEnd =
+                                (cursorPosition as number) + 1;
+                        }
+                    }}
                 />
             </Flex>
         </Container>
