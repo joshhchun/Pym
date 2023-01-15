@@ -1,7 +1,6 @@
 import {
     Center,
     Container,
-    Title,
     Text,
     createStyles,
     Header,
@@ -14,10 +13,16 @@ import {
     IconFile,
     IconAlphabetLatin,
     IconLink,
-    IconBat,
 } from "@tabler/icons";
 
 const useStyles = createStyles((theme) => ({
+    header: {
+        height: 56,
+        marginBottom: 80,
+        [theme.fn.smallerThan(600)]: {
+                marginBottom: 40
+        }
+    },
     inner: {
         height: 56,
         display: "flex",
@@ -46,27 +51,16 @@ const useStyles = createStyles((theme) => ({
     },
 }));
 
-interface Props {
-    canSave: boolean;
-    value: string | null;
-    language: string | null;
-}
-
 export default function NavBar() {
     const { classes } = useStyles();
 
     return (
         <Header
-            height={56}
-            mb={80}
-            sx={(theme) => ({
-                backgroundColor: theme.colors.dark[6],
-            })}
+            className={classes.header}
         >
             <Container>
                 <div className={classes.inner}>
                     <Group spacing={7}>
-                        <IconBat color="white" stroke={1.5} />
                         <Text c="white" fz="xl" component="a" href="/" fw={700}>
                             Pym
                         </Text>

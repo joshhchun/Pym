@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { languages } from "../utils/languages";
-import "../App.css";
 import { useWindowScroll } from "@mantine/hooks";
+import { IconArrowUp } from "@tabler/icons";
+import { useNavigate } from "react-router-dom";
 import {
     Container,
     Autocomplete,
@@ -11,9 +12,7 @@ import {
     Transition,
     Button,
 } from "@mantine/core";
-import { IconArrowUp } from "@tabler/icons";
-
-import { useNavigate } from "react-router-dom";
+import "../App.css";
 
 const NewText = () => {
     const [value, setValue] = useState("");

@@ -16,24 +16,24 @@ interface Response {
 const NewPost = (props: any) => {
     const navigate = useNavigate();
     return (
-            <Container>
-                <FilePond
-                    className="fp"
-                    allowMultiple={false}
-                    maxFiles={1}
-                    server={{
-                        process: {
-                            url: "https://pym.jchun.me/api/save/",
-                            onload: (response: string): any => {
-                                const data: Response = JSON.parse(response);
-                                navigate(`/${data.shortId}`);
-                            },
+        <Container>
+            <FilePond
+                className="fp"
+                allowMultiple={false}
+                maxFiles={1}
+                server={{
+                    process: {
+                        url: "https://pym.jchun.me/api/save/",
+                        onload: (response: string): any => {
+                            const data: Response = JSON.parse(response);
+                            navigate(`/${data.shortId}`);
                         },
-                    }}
-                    name="files"
-                    labelIdle='Drag & Drop your file or <span class="filepond--label-action">Browse</span>'
-                />
-            </Container>
+                    },
+                }}
+                name="files"
+                labelIdle='Drag & Drop your file or <span class="filepond--label-action">Browse</span>'
+            />
+        </Container>
     );
 };
 

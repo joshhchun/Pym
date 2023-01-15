@@ -45,21 +45,15 @@ pre .mantine-Prism-lineContent {
     text-align: left;
 }
 
-@media only screen and (max-width: 1200px) {
-    syntax-highlighter {
-        font-size: 95%;
-    }
-}
-
-@media only screen and (max-width: 900px) {
-    syntax-highlighter {
+@media only screen and (max-width: 600px) {
+    code .mantine-Prism-lineContent {
         font-size: 90%;
     }
-}
-
-@media only screen and (max-width: 600px) {
-    syntax-highlighter {
-        font-size: 75%;
+    pre .mantine-Prism-lineContent {
+        font-size: 90%;
+    }
+    .mantine-Title-root {
+        font-size: 32px;
     }
 }
 

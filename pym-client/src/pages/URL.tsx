@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container, TextInput, Group, Button, Flex } from "@mantine/core";
+import { Container, TextInput, Flex } from "@mantine/core";
 import { IconClipboardCopy, IconUpload } from "@tabler/icons";
 
 interface Data {
@@ -72,7 +72,6 @@ const URL = () => {
                             ) : (
                                 <IconUpload
                                     stroke={1.5}
-                                    size={32}
                                     type="submit"
                                     onClick={handleClick}
                                 />
