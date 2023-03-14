@@ -10,13 +10,14 @@ import (
 
 func (self *handler) initDb() error {
     // Init host and port
-    user := os.Getenv("DB_USER")
-    dbName := os.Getenv("DB_NAME")
-    host := os.Getenv("DB_HOST")
-    port := os.Getenv("DB_PORT")
+    user     := os.Getenv("DB_USER")
+    dbName   := os.Getenv("DB_NAME")
+    host     := os.Getenv("DB_HOST")
+    port     := os.Getenv("DB_PORT")
     password := os.Getenv("POSTGRES_PASSWORD")
 
-    dbInfo := fmt.Sprintf("user=%s host=%s port=%s password=%s dbname=%s sslmode=disable", user, host, port, password, dbName)
+    dbInfo  := fmt.Sprintf("user=%s host=%s port=%s password=%s dbname=%s sslmode=disable",
+                            user, host, port, password, dbName)
     db, err := sql.Open("postgres", dbInfo)
     if err != nil {
         return err
@@ -36,8 +37,5 @@ func (self *handler) initDb() error {
             shortId    TEXT NOT NULL UNIQUE,
             hash	   TEXT NOT NULL UNIQUE
         )`)
-    if err != nil {
-        return err
-    }
-    return nil
+    return err
 }

@@ -31,18 +31,18 @@ type Form struct {
 }
 
 var textMimeTypes = map[string]string{
-    "text/javascript":           "javascript",
-    "application/json":          "json",
-    "application/vnd.ms-excel":  "excel",
-    "application/x-latex":       "latex",
-    "application/x-python-code": "python",
-    "text/x-python-script":      "python",
-    "application/x-sh":          "shell",
-    "text/css":                  "css",
-    "text/html":                 "html",
-    "text/plain":                "plaintext",
-    "text/x-python":             "python",
-    "text/x-c":                  "c",
+    "text/javascript"           : "javascript",
+    "application/json"          : "json",
+    "application/vnd.ms-excel"  : "excel",
+    "application/x-latex"       : "latex",
+    "application/x-python-code" : "python",
+    "text/x-python-script"      : "python",
+    "application/x-sh"          : "shell",
+    "text/css"                  : "css",
+    "text/html"                 : "html",
+    "text/plain"                : "plaintext",
+    "text/x-python"             : "python",
+    "text/x-c"                  : "c",
 }
 
 // If link does not have https, add it
@@ -69,8 +69,8 @@ func (self *handler) updateExpire(shortId string) error {
 }
 
 func (self *handler) fetchPost(shortId string) (string, string, string, error) {
-    var hash string
-    var group string
+    var hash     string
+    var group    string
     var language string
 
     row := self.db.QueryRow(`SELECT "group", language, hash FROM pym WHERE shortId=$1`, shortId)
@@ -83,7 +83,7 @@ func hashText(buffer string) string {
 }
 
 func (self *handler) generateShortID() (string, error) {
-    var count int
+    var count   int
     var shortId string
     b := make([]byte, 2)
 
@@ -96,8 +96,8 @@ func (self *handler) generateShortID() (string, error) {
         }
 
         shortId = hex.EncodeToString(b)[:4]
-        row := self.db.QueryRow(`SELECT COUNT(shortId) FROM pym WHERE shortId=$1`, shortId)
-        err = row.Scan(&count)
+        row    := self.db.QueryRow(`SELECT COUNT(shortId) FROM pym WHERE shortId=$1`, shortId)
+        err     = row.Scan(&count)
         if err != nil {
             log.Println(err)
         }

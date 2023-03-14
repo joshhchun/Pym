@@ -25,15 +25,12 @@ func main() {
     if err != nil {
         log.Panic(err)
     }
-
     defer obj.db.Close()
 
-    // Init gin server
     r := gin.Default()
-
     // Request handlers
     r.GET("/api/display/:id", obj.displayRouter)
-    r.GET("/api/:id", obj.rawRouter)
-    r.POST("/api/save", obj.saveRouter)
+    r.GET("/api/:id",         obj.rawRouter)
+    r.POST("/api/save",       obj.saveRouter)
     r.Run(fmt.Sprintf("%s:%s", host, port))
 }

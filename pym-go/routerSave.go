@@ -17,7 +17,7 @@ import (
 func (self *handler) saveRouter(c *gin.Context) {
     header := c.GetHeader("Content-Type")
     switch {
-    // User is trying to save text / url
+    // User is trying to save text or url
     case header == "application/json":
         requestBody := Body{}
         if err := c.BindJSON(&requestBody); err != nil {
