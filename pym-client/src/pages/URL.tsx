@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Container, TextInput, Flex } from "@mantine/core";
 import { IconClipboardCopy, IconUpload } from "@tabler/icons";
+import { useClipboard } from "@mantine/hooks";
 
 interface Data {
     shortId: string;
@@ -10,6 +11,7 @@ const URL = () => {
     const [value, setValue] = useState("");
     const [success, setSuccess] = useState(false);
     const [failure, setFailure] = useState(false);
+    const clipboard = useClipboard({ timeout: 500 })
 
     const handleClick = async (e: any) => {
         e.preventDefault();
@@ -66,7 +68,7 @@ const URL = () => {
                                     stroke={1.5}
                                     size={48}
                                     type="submit"
-                                    onClick={handleClick}
+                                    onClick={clipboard.copy(value)!}
                                     cursor="pointer"
                                 />
                             ) : (
