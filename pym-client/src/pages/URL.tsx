@@ -9,7 +9,7 @@ interface Data {
 
 const URL = () => {
     const [value, setValue] = useState("");
-    const [success, setSuccess] = useState(false);
+    const [success, setSuccess] = useState(true);
     const [failure, setFailure] = useState(false);
     const clipboard = useClipboard({ timeout: 500 })
 
