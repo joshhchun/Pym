@@ -68,7 +68,7 @@ const URL = () => {
                                     stroke={1.5}
                                     size={48}
                                     type="submit"
-                                    onClick={clipboard.copy(value)!}
+                                    onClick={() => clipboard.copy(value)}
                                     cursor="pointer"
                                 />
                             ) : (
