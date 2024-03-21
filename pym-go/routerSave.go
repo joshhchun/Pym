@@ -33,11 +33,13 @@ func (self *handler) saveRouter(c *gin.Context) {
         c.JSON(200, gin.H{"shortId": shortId})
     // User is trying to save a file
     case strings.HasPrefix(header, "multipart/form-data"):
+        log.Println("Multi-part form data received");
         form := Form{}
         // Bind the request to the Form
         if err := c.ShouldBind(&form); err != nil {
             log.Println(err)
             c.AbortWithStatus(http.StatusBadRequest)
+            log.Println("ERROR BINDING FORM")
         }
         if form.File.Size > self.maxFileSize {
             log.Printf("Requested upload file size too large: %d", form.File.Size)
